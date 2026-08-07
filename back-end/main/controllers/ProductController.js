@@ -656,3 +656,23 @@ exports.getRestockSubscribers = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.compareProducts = async (req, res, next) => {
+  try {
+    const { ids } = req.query;
+    if (!ids) {
+      return res.status(400).json({ success: false, message: "Vui lòng truyền danh sách ID sản phẩm cần so sánh." });
+    }
+    const idList = ids.split(",").map(id => id.trim()).filter(Boolean);
+
+    const products = await Product.find({
+      _id: { $in: idList },
+      isActive: true,
+      deletedAt: null
+    }).populate("category", "name slug");
+
+    return res.status(200).json({ success: true, data: products });
+  } catch (err) {
+    next(err);
+  }
+};

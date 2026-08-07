@@ -25,6 +25,22 @@ const productSchema = new mongoose.Schema(
       index: true,
     },
 
+    // ─── THÔNG SỐ KỸ THUẬT LAPTOP & LINH KIỆN (MỚI) ──────────────────────────
+    brand: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    specifications: {
+      cpu: { type: String, default: "" },
+      ram: { type: String, default: "" },
+      vga: { type: String, default: "" },
+      storage: { type: String, default: "" },
+      screen: { type: String, default: "" },
+      mainboard: { type: String, default: "" },
+      psu: { type: String, default: "" },
+    },
+
     // ─── Giá ──────────────────────────────────────────────────────────────────
     basePrice: {
       type: Number,
@@ -67,7 +83,7 @@ const productSchema = new mongoose.Schema(
     tags: [{ type: String, trim: true }],
     isActive: {
       type: Boolean,
-      default: true,   // false = ẩn khỏi frontend, admin vẫn xem được
+      default: true,
     },
 
     // ─── Flash Sale ───────────────────────────────────────────────────────────
@@ -101,7 +117,7 @@ productSchema.index(
 );
 productSchema.index({ category: 1, basePrice: 1 });
 productSchema.index({ isActive: 1, deletedAt: 1 });
-productSchema.index({ name: "text", tags: "text" }); // Full-text search
+productSchema.index({ name: "text", tags: "text", brand: "text", "specifications.cpu": "text", "specifications.vga": "text" });
 
 const Product = mongoose.model('Product', productSchema);
 module.exports = Product;

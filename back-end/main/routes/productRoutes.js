@@ -12,6 +12,7 @@ router.get("/flash-sales",            ProductController.getFlashSales);
 router.get("/category-showcase",      ProductController.getCategoryShowcase);
 router.get("/filter/category",        ProductController.filterByCategory);
 router.get("/filter/price",           ProductController.filterByPrice);
+router.get("/compare", ProductController.compareProducts);
 router.get("/:id",                    ProductController.getById);
 router.get("/:id/variants",           ProductController.getVariants);
 router.get("/:id/related",            ProductController.getRelated);
