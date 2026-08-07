@@ -21,7 +21,7 @@ const productVariantSchema = new mongoose.Schema(
     },
     attributes: {
       type: Map,
-      of: String,   // VD: { size: "M", color: "đỏ" }
+      of: String,   // VD: { ram: "16GB", ssd: "512GB", color: "Black" }
     },
     price: {
       type: Number,
