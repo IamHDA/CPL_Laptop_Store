@@ -17,6 +17,9 @@ import AdminUsersPage from "./pages/admin/AdminUsersPage.jsx";
 import AdminVouchersPage from "./pages/admin/AdminVouchersPage.jsx";
 import LoginPage from "./pages/LoginPage";
 import AdminFlashSalesPage from "./pages/admin/AdminFlashSalesPage.jsx";
+import AdminBannersPage from "./pages/admin/AdminBannersPage.jsx";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage.jsx";
+import AdminHomepageSettingsPage from "./pages/admin/AdminHomepageSettingsPage.jsx";
 
 /** Route Guard kiểm tra quyền Admin từ Server */
 const AdminRoute = ({ children }) => {
@@ -71,6 +74,8 @@ export default function App() {
                     <Route path="users" element={<AdminUsersPage />} />
                     <Route path="flash-sales" element={<AdminFlashSalesPage />} />
                     <Route path="vouchers" element={<AdminVouchersPage />} />
+                    <Route path="banners" element={<AdminBannersPage />} />
+                    <Route path="home-page-settings" element={<AdminHomepageSettingsPage />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/admin" replace />} />
