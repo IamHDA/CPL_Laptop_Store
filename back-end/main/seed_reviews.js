@@ -1,10 +1,11 @@
+require("dotenv").config();
 const mongoose = require("mongoose");
 const User = require("./models/User");
 const Product = require("./models/Product");
 const Order = require("./models/Order");
 const Review = require("./models/Review");
 
-const mongoUrl = process.env.MONGODB_URI || "mongodb://localhost:27017/ecommerce";
+const mongoUrl = process.env.MONGO_URI || "mongodb://localhost:27017/ecommerce";
 
 async function seedReviews() {
   try {

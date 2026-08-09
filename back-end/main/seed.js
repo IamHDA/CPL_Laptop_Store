@@ -43,6 +43,7 @@ const seedData = async () => {
     await Product.create([
       {
         name: "Laptop ASUS ROG Strix G16 (2024)",
+        slug: "laptop-asus-rog-strix-g16-2024",
         brand: "ASUS",
         category: catMap["laptop-gaming"],
         basePrice: 32000000,
@@ -62,6 +63,7 @@ const seedData = async () => {
       },
       {
         name: "Laptop MSI Katana 15 B13VFK",
+        slug: "laptop-msi-katana-15-b13vfk",
         brand: "MSI",
         category: catMap["laptop-gaming"],
         basePrice: 24000000,
@@ -81,6 +83,7 @@ const seedData = async () => {
       },
       {
         name: "Laptop Lenovo ThinkPad X1 Carbon Gen 11",
+        slug: "laptop-lenovo-thinkpad-x1-carbon-gen-11",
         brand: "Lenovo",
         category: catMap["laptop-van-phong"],
         basePrice: 38000000,
@@ -100,6 +103,7 @@ const seedData = async () => {
       },
       {
         name: "Card màn hình ASUS ROG Strix RTX 4070 Ti SUPER 16GB",
+        slug: "vga-asus-rog-strix-rtx-4070-ti-super-16gb",
         brand: "ASUS",
         category: catMap["vga-card-do-hoa"],
         basePrice: 22000000,
@@ -117,6 +121,7 @@ const seedData = async () => {
       },
       {
         name: "SSD Kingston NV2 1TB NVMe PCIe 4.0",
+        slug: "ssd-kingston-nv2-1tb",
         brand: "Kingston",
         category: catMap["ram-ssd"],
         basePrice: 1200000,
