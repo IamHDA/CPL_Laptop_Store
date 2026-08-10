@@ -11,7 +11,7 @@ const ReturnRequest      = require("../models/ReturnRequest");
 const Notification       = require("../models/Notification");
 const ShippingZone       = require("../models/ShippingZone");
 const { getEffectivePrice } = require("../lib/pricing");
-// const transporter = require("../config/mailer"); // TODO: khi có mailer config
+const transporter = require("../config/mailer");
 
 // ─── Create Order ─────────────────────────────────────────────────────────────
 // POST /api/orders
@@ -238,6 +238,66 @@ exports.createOrder = async (req, res, next) => {
       referenceId: order._id.toString(),
       referenceModel: "Order",
     });
+
+    // Gửi mail xác nhận đơn hàng (async, không block response)
+    User.findById(userId).then((user) => {
+      if (user && user.email) {
+        const productRows = enrichedProducts.map((p) => `
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #eee;">${p.name || 'Sản phẩm'}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center;">${p.quantity}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">${(p.priceAtOrder || 0).toLocaleString('vi-VN')} ₫</td>
+          </tr>
+        `).join('');
+
+        const orderCode = order.orderNumber || order._id.toString().slice(-8).toUpperCase();
+        const mailOptions = {
+          from: `"Laptop Store" <${process.env.MAIL_USER}>`,
+          to: user.email,
+          subject: `[Laptop Store] Xác nhận đơn hàng #${orderCode}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px; color: #1d1d1f;">
+              <h2 style="color: #0071e3; margin-top: 0;">Cảm ơn bạn đã đặt hàng tại Laptop Store!</h2>
+              <p>Xin chào <strong>${billingInfo.fullName || user.fullName || user.username}</strong>,</p>
+              <p>Đơn hàng của bạn đã được hệ thống tiếp nhận và đang được xử lý.</p>
+              
+              <div style="background-color: #f5f5f7; border-radius: 6px; padding: 16px; margin: 20px 0;">
+                <p style="margin: 0 0 8px 0;"><strong>Mã đơn hàng:</strong> #${orderCode}</p>
+                <p style="margin: 0 0 8px 0;"><strong>Hình thức thanh toán:</strong> ${paymentMethod === 'cod' ? 'Thanh toán khi nhận hàng (COD)' : paymentMethod === 'bank' ? 'Chuyển khoản ngân hàng' : paymentMethod}</p>
+                <p style="margin: 0;"><strong>Địa chỉ giao hàng:</strong> ${billingInfo.street || ''}, ${billingInfo.district || ''}, ${billingInfo.city || ''}</p>
+              </div>
+
+              <h3>Chi tiết đơn hàng</h3>
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                  <tr style="background-color: #fafafa;">
+                    <th style="padding: 8px; text-align: left; border-bottom: 2px solid #ddd;">Sản phẩm</th>
+                    <th style="padding: 8px; text-align: center; border-bottom: 2px solid #ddd;">SL</th>
+                    <th style="padding: 8px; text-align: right; border-bottom: 2px solid #ddd;">Đơn giá</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${productRows}
+                </tbody>
+              </table>
+
+              <div style="text-align: right; font-size: 16px; font-weight: bold; color: #1d1d1f;">
+                Tổng tiền thanh toán: <span style="color: #e53e3e;">${(order.total || 0).toLocaleString('vi-VN')} ₫</span>
+              </div>
+
+              <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
+              <p style="font-size: 12px; color: #8e8e93; text-align: center; margin: 0;">
+                Nếu bạn có bất kỳ thắc mắc nào, vui lòng liên hệ bộ phận CSKH của Laptop Store.
+              </p>
+            </div>
+          `,
+        };
+
+        transporter.sendMail(mailOptions).catch((err) => {
+          console.error("Lỗi gửi mail xác nhận đơn hàng:", err.message);
+        });
+      }
+    }).catch(() => {});
 
     // Thông báo cho admin khi có đơn chuyển khoản cần xác nhận (bank only, vnpay tự động)
     if (paymentMethod === "bank") {
