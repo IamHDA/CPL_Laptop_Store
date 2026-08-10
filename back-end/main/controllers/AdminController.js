@@ -18,24 +18,40 @@ const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 // GET /api/admin/stats/overview
 exports.getOverview = async (req, res, next) => {
   try {
+    const { startDate, endDate, categoryId } = req.query;
     const DONE = ["Confirmed", "Shipped", "Delivered"];
+
+    const orderMatch = { status: { $in: DONE } };
+    if (startDate || endDate) {
+      orderMatch.createdAt = {};
+      if (startDate) orderMatch.createdAt.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        orderMatch.createdAt.$lte = end;
+      }
+    }
+
+    const categoryMatch = categoryId && categoryId !== "all"
+      ? { "_prod.category": new mongoose.Types.ObjectId(categoryId) }
+      : {};
+
     const [userCount, productCount, orderCount, profitResult] = await Promise.all([
       User.countDocuments({ deletedAt: null }),
       Product.countDocuments({ isActive: true, deletedAt: null }),
-      Order.countDocuments(),
+      Order.countDocuments(orderMatch),
       Order.aggregate([
-        { $match: { status: { $in: DONE } } },
-        // Lưu order.total (đã gồm ship, đã trừ voucher) trước khi unwind
+        { $match: orderMatch },
         { $addFields: { _orderTotal: "$total" } },
         { $unwind: "$products" },
         { $lookup: { from: "products", localField: "products.product", foreignField: "_id", as: "_prod" } },
+        ...(Object.keys(categoryMatch).length > 0 ? [{ $match: categoryMatch }] : []),
         { $addFields: {
           _cost: { $ifNull: [
             "$products.costAtOrder",
             { $ifNull: [{ $arrayElemAt: ["$_prod.basePrice", 0] }, "$products.priceAtOrder"] }
           ]},
         }},
-        // Gom về đơn hàng để tránh đếm trùng revenue sau unwind
         { $group: {
           _id: "$_id",
           totalOrder: { $first: "$_orderTotal" },
@@ -63,35 +79,47 @@ exports.getOverview = async (req, res, next) => {
 };
 
 // ─── Get Revenue Stats ────────────────────────────────────────────────────────
-// GET /api/admin/stats/revenue?period=monthly&year=2025
+// GET /api/admin/stats/revenue?period=monthly&year=2025&startDate=...&endDate=...&categoryId=...
 exports.getRevenueStats = async (req, res, next) => {
   try {
-    const { period = "monthly", year = new Date().getFullYear() } = req.query;
+    const { period = "monthly", year = new Date().getFullYear(), startDate, endDate, categoryId } = req.query;
 
     const groupBy = period === "daily"
       ? { year: { $year: "$createdAt" }, month: { $month: "$createdAt" }, day: { $dayOfMonth: "$createdAt" } }
       : { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } };
 
+    const orderMatch = { status: { $in: ["Confirmed", "Shipped", "Delivered"] } };
+    if (startDate || endDate) {
+      orderMatch.createdAt = {};
+      if (startDate) orderMatch.createdAt.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        orderMatch.createdAt.$lte = end;
+      }
+    } else if (year) {
+      orderMatch.createdAt = {
+        $gte: new Date(`${year}-01-01T00:00:00.000Z`),
+        $lte: new Date(`${year}-12-31T23:59:59.999Z`),
+      };
+    }
+
+    const categoryMatch = categoryId && categoryId !== "all"
+      ? { "_prod.category": new mongoose.Types.ObjectId(categoryId) }
+      : {};
+
     const stats = await Order.aggregate([
-      {
-        $match: {
-          status: { $in: ["Confirmed", "Shipped", "Delivered"] },
-          createdAt: {
-            $gte: new Date(`${year}-01-01`),
-            $lte: new Date(`${year}-12-31`),
-          },
-        },
-      },
+      { $match: orderMatch },
       { $addFields: { _orderTotal: "$total", _groupKey: groupBy } },
       { $unwind: "$products" },
       { $lookup: { from: "products", localField: "products.product", foreignField: "_id", as: "_prod" } },
+      ...(Object.keys(categoryMatch).length > 0 ? [{ $match: categoryMatch }] : []),
       { $addFields: {
         _cost: { $ifNull: [
           "$products.costAtOrder",
           { $ifNull: [{ $arrayElemAt: ["$_prod.basePrice", 0] }, "$products.priceAtOrder"] }
         ]},
       }},
-      // Gom về đơn hàng để tránh đếm revenue trùng, orderCount đúng
       { $group: {
         _id: { orderId: "$_id", groupKey: "$_groupKey" },
         revenue: { $first: "$_orderTotal" },
@@ -114,12 +142,25 @@ exports.getRevenueStats = async (req, res, next) => {
 };
 
 // ─── Get Stats By Category ───────────────────────────────────────────────────
-// GET /api/admin/stats/by-category
+// GET /api/admin/stats/by-category?startDate=...&endDate=...
 exports.getStatsByCategory = async (req, res, next) => {
   try {
+    const { startDate, endDate } = req.query;
     const DONE = ["Confirmed", "Shipped", "Delivered"];
+
+    const orderMatch = { status: { $in: DONE } };
+    if (startDate || endDate) {
+      orderMatch.createdAt = {};
+      if (startDate) orderMatch.createdAt.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        orderMatch.createdAt.$lte = end;
+      }
+    }
+
     const stats = await Order.aggregate([
-      { $match: { status: { $in: DONE } } },
+      { $match: orderMatch },
       { $addFields: { _orderTotal: "$total" } },
       { $unwind: "$products" },
       { $lookup: { from: "products", localField: "products.product", foreignField: "_id", as: "_prod" } },
@@ -165,32 +206,49 @@ exports.getStatsByCategory = async (req, res, next) => {
 };
 
 // ─── Get Top Products ─────────────────────────────────────────────────────────
-// GET /api/admin/stats/top-products?limit=10
+// GET /api/admin/stats/top-products?limit=10&startDate=...&endDate=...&categoryId=...
 exports.getTopProducts = async (req, res, next) => {
   try {
+    const { startDate, endDate, categoryId } = req.query;
     const limit = parseInt(req.query.limit) || 10;
 
-    // Tính số lượng bán từ các đơn hàng đã delivered
+    const orderMatch = { status: { $in: ["Confirmed", "Shipped", "Delivered"] } };
+    if (startDate || endDate) {
+      orderMatch.createdAt = {};
+      if (startDate) orderMatch.createdAt.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        orderMatch.createdAt.$lte = end;
+      }
+    }
+
+    const categoryMatch = categoryId && categoryId !== "all"
+      ? { "productData.category": new mongoose.Types.ObjectId(categoryId) }
+      : {};
+
     const topProducts = await Order.aggregate([
-      { $match: { status: { $in: ["Confirmed", "Shipped", "Delivered"] } } },
+      { $match: orderMatch },
       { $unwind: "$products" },
-      {
-        $group: {
-          _id: "$products.product",
-          sold: { $sum: "$products.quantity" },
-        },
-      },
-      { $sort: { sold: -1 } },
-      { $limit: limit },
       {
         $lookup: {
           from: "products",
-          localField: "_id",
+          localField: "products.product",
           foreignField: "_id",
           as: "productData",
         },
       },
       { $unwind: "$productData" },
+      ...(Object.keys(categoryMatch).length > 0 ? [{ $match: categoryMatch }] : []),
+      {
+        $group: {
+          _id: "$products.product",
+          sold: { $sum: "$products.quantity" },
+          productData: { $first: "$productData" }
+        },
+      },
+      { $sort: { sold: -1 } },
+      { $limit: limit },
       {
         $project: {
           _id: 1,
