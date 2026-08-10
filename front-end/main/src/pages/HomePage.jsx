@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Banner from "../components/Banner";
 import FlashSale from "../components/FlashSale";
-import NewArrival from "../components/NewArrival";
+import BestSelling from "../components/BestSelling";
 import Categories from "../components/Categories";
-import Services from "../components/Services";
 import CategoryShowcase from "../components/CategoryShowcase";
 import ExploreProducts from "../components/ExploreProducts";
 import Footer from "../components/Footer";
@@ -13,10 +12,11 @@ import { API_URL } from "../lib/api";
 const SECTION_MAP = {
   flashSale:        () => <FlashSale />,
   categories:       () => <Categories />,
-  newArrival:       () => <NewArrival />,
+  newArrival:       () => <BestSelling />,
+  bestSelling:      () => <BestSelling />,
   categoryShowcase: () => <CategoryShowcase />,
   exploreProducts:  () => <ExploreProducts />,
-  services:         () => <Services />,
+  services:         () => null,
 };
 
 const DEFAULT_SECTIONS = [
@@ -25,7 +25,6 @@ const DEFAULT_SECTIONS = [
   { key: "newArrival",       visible: true, order: 3 },
   { key: "categoryShowcase", visible: true, order: 4 },
   { key: "exploreProducts",  visible: true, order: 5 },
-  { key: "services",         visible: true, order: 6 },
 ];
 
 const HomePage = () => {

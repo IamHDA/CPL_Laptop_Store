@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { fadeInUp } from "../../lib/animations";
-import exploreImg from "../../assets/ChatGPT Image 15_28_35 26 thg 3, 2026.png";
+
+const exploreImg = "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=1200";
 
 export default function ExploreProducts() {
   return (
@@ -16,10 +17,10 @@ export default function ExploreProducts() {
           Hệ sinh thái hoàn hảo
         </h2>
         <p
-          className="text-[#6e6e73] max-w-[500px]"
+          className="text-[#6e6e73] max-w-[500px] mb-8"
           style={{ fontSize: "16px", lineHeight: 1.6 }}
         >
-          Tất cả thiết bị Apple hoạt động liền mạch, tạo nên hệ sinh thái mạnh
+          Tất cả thiết bị Laptop & Công nghệ hoạt động liền mạch, tạo nên hệ sinh thái mạnh
           mẽ cho cuộc sống số của bạn.
         </p>
 
@@ -32,8 +33,8 @@ export default function ExploreProducts() {
         >
           <img
             src={exploreImg}
-            alt="Apple Ecosystem"
-            className="w-full h-auto object-contain rounded-2xl"
+            alt="Ecosystem"
+            className="w-full max-h-[500px] object-cover rounded-2xl shadow-sm"
           />
         </motion.div>
       </motion.div>
