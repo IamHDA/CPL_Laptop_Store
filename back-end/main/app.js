@@ -52,7 +52,7 @@ app.use(
 const ALLOWED_ORIGINS =
   process.env.NODE_ENV === "production"
     ? [process.env.CLIENT_URL].filter(Boolean)
-    : ["http://localhost:5174"];
+    : ["http://localhost:5174", "http://127.0.0.1:5174"];
 
 app.use(
   cors({
@@ -133,6 +133,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/shipping", shippingRoutes);
 app.use("/api/images", imageRoutes);
 app.use("/api/banners", bannerRoutes);
+app.use("/api/home-slides", bannerRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/chat", chatLimit, chatRoutes);
 
