@@ -4,6 +4,8 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
+  useNavigationType,
 } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -39,6 +41,29 @@ import SignUpPage from "./pages/SignUpPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import PaymentResultPage from "./pages/PaymentResultPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
+
+/**
+ * Đưa trang về đầu khi đổi route. Không có nó thì vị trí cuộn của trang cũ được
+ * giữ nguyên: đang ở cuối /products bấm "So sánh" là trang mới mở ra ở giữa,
+ * mất cả tiêu đề lẫn bộ lọc.
+ *
+ * Chỉ cuộn khi điều hướng kiểu PUSH/REPLACE. Với POP (nút back/forward) thì để
+ * yên, vì lúc đó người dùng mong quay lại đúng chỗ mình đã rời đi.
+ *
+ * ScrollRestoration của React Router chỉ dùng được với data router
+ * (createBrowserRouter), app này đang dùng BrowserRouter + Routes nên tự làm.
+ */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  const navigationType = useNavigationType();
+
+  React.useEffect(() => {
+    if (navigationType === "POP") return;
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname, navigationType]);
+
+  return null;
+}
 
 /** Route Guard kiểm tra quyền Admin từ Server */
 const AdminRoute = ({ children }) => {
@@ -82,6 +107,7 @@ const CustomerRoute = ({ children }) => {
 export default function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         {/* Public Customer Routes */}
         <Route path="/" element={<HomePage />} />

@@ -161,9 +161,13 @@ export default function AdminLayout() {
         />
       )}
 
-      {/* ── Sidebar ── */}
+      {/* ── Sidebar ──
+          Desktop dùng lg:sticky chứ không phải lg:static: static thì sidebar nằm
+          trong luồng trang nên cuộn đi mất, trong khi top bar bên cạnh là sticky
+          vẫn đứng yên. h-screen + self-start giữ nó cao đúng một màn hình và ghim
+          tại top-0 (phần tử cao hơn viewport thì sticky sẽ không dính). */}
       <aside
-        className={`fixed left-0 top-0 z-30 flex h-screen w-[240px] flex-col border-r border-black/[0.06] bg-white shadow-[4px_0_20px_rgba(0,0,0,0.04)] transition-transform duration-300 lg:static lg:translate-x-0 lg:shadow-none ${
+        className={`fixed left-0 top-0 z-30 flex h-screen w-[240px] flex-col border-r border-black/[0.06] bg-white shadow-[4px_0_20px_rgba(0,0,0,0.04)] transition-transform duration-300 lg:sticky lg:top-0 lg:self-start lg:translate-x-0 lg:shadow-none ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
