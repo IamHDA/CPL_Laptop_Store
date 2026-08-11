@@ -69,7 +69,14 @@ flashSaleSchema.index({ "products.productId": 1 });
 async function syncProductsFlashSale(flashSale) {
   const Product = require("./Product"); // lazy require — tránh circular
   const now = new Date();
-  const active = flashSale.isActive && new Date(flashSale.endsAt) > now;
+  // Phải xét cả startsAt: thiếu nó thì flash sale hẹn lịch giảm giá ngay khi vừa tạo,
+  // trong khi GET /api/products/flash-sales lại chưa liệt kê → giá lệch nhau giữa 2 trang.
+  // ponytail: sale hẹn lịch chỉ áp giá khi có ai đó save lại; cần cron gọi hàm này nếu
+  // muốn nó tự bật đúng giờ startsAt.
+  const active =
+    flashSale.isActive &&
+    new Date(flashSale.startsAt) <= now &&
+    new Date(flashSale.endsAt) > now;
 
   for (const item of flashSale.products) {
     if (active) {

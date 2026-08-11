@@ -6,17 +6,7 @@ const RestockSubscriber  = require("../models/RestockSubscriber");
 const FlashSale          = require("../models/FlashSale");
 const { getEffectivePrice } = require("../lib/pricing");
 
-// TODO: Cài slugify: npm install slugify
-// const slugify = require("slugify");
-// Tạm dùng hàm đơn giản cho đến khi cài package
-const slugify = (str) =>
-  str
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-");
+const slugify = require("../lib/slugify");
 
 // ─── 6.1 Get All ──────────────────────────────────────────────────────────────
 // GET /api/products?page=1&limit=20&sort=newest
@@ -317,6 +307,7 @@ exports.getFlashSales = async (req, res, next) => {
     const now = new Date();
 
     const flashSales = await FlashSale.find({
+      isActive: true,
       startsAt: { $lte: now },
       endsAt: { $gt: now },
     })

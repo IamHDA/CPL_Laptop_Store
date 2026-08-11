@@ -33,17 +33,33 @@ npm install
 # 2. Tạo file cấu hình môi trường (.env) từ file mẫu
 copy .env.example .env
 
-# 3. Nạp dữ liệu mẫu (Seed Data)
-node seed.js
-node seed_orders.js
-node seed_banners.js
-node seed_flashsales.js
-node seed_reviews.js
+# 3. Nạp toàn bộ dữ liệu mẫu (đúng thứ tự phụ thuộc)
+npm run seed
 
 # 4. Chạy server phát triển
 npm run dev
 ```
 *Server Back-end sẽ chạy tại: `http://localhost:3000`*
+
+> ⚠️ `npm run seed` **xoá sạch** Category / Product / User / Order / Review / Banner /
+> Voucher / ShippingZone trước khi nạp lại. Kiểm tra `MONGO_URI` đang trỏ vào DB local
+> chứ không phải cluster production trước khi chạy.
+
+Kiểm tra dữ liệu seed khớp schema mà không cần kết nối DB:
+```bash
+npm run test:seeds
+```
+
+Từng bước riêng lẻ nếu cần chạy lại một phần (thứ tự có phụ thuộc):
+```bash
+node seed.js            # 8 danh mục · 42 sản phẩm · 23 variant · 2 tài khoản
+node seed_shipping.js   # 20 khu vực vận chuyển
+node seed_vouchers.js   # 10 voucher (đang chạy / sắp mở / hết hạn / hết lượt)
+node seed_banners.js    # 16 banner trang chủ và theo danh mục
+node seed_orders.js     # 120 đơn trải 12 tháng, 6 khách hàng   (cần seed.js)
+node seed_flashsales.js # 4 chương trình flash sale             (cần seed.js)
+node seed_reviews.js    # đánh giá gắn với đơn đã giao          (cần seed_orders.js)
+```
 
 ### **2. Khởi chạy Front-end**
 ```bash
@@ -61,7 +77,8 @@ copy .env.example .env
 # 4. Khởi chạy Front-end
 npm run dev
 ```
-*Website Front-end sẽ chạy tại: `http://localhost:5173`*
+*Website Front-end sẽ chạy tại: `http://localhost:5174`*
+*(cổng 5174 được cố định trong `vite.config.js` và là origin duy nhất được CORS của Back-end cho phép ở chế độ dev)*
 
 ---
 
@@ -72,8 +89,14 @@ Dữ liệu seed đã chuẩn bị sẵn các tài khoản với các quyền t�
 | Vai trò (Role) | Email | Mật khẩu | Quyền hạn |
 |---|---|---|---|
 | **Admin** | `admin@gmail.com` | `Admin@123` | Toàn quyền quản trị hệ thống, xem Dashboard thống kê |
-| **Customer** | `user@gmail.com` | `User@123` | Người mua hàng, đặt đơn, xem lịch sử đơn hàng |
-| **Customer 2** | `customer1@example.com` | `hashed_password` | Tài khoản mẫu có sẵn đơn hàng lịch sử |
+| **Customer** | `user@gmail.com` | `User@123` | Người mua hàng, đặt đơn, có sẵn 2 địa chỉ giao hàng |
+
+`seed_orders.js` còn tạo 6 khách hàng `customer1@example.com` … `customer6@example.com`
+(cùng mật khẩu `User@123`) có sẵn lịch sử đơn hàng trải 12 tháng — đăng nhập bằng các
+tài khoản này để xem trang Đơn hàng, đánh giá và tích điểm đã có dữ liệu.
+
+Mã giảm giá thử ngay khi thanh toán: `WELCOME5` (-5%), `GIAM10` (-10% đơn từ 15 triệu),
+`LAPTOP500K` (-500K đơn từ 10 triệu), `SETUPPC` (-1 triệu đơn từ 25 triệu).
 
 ---
 

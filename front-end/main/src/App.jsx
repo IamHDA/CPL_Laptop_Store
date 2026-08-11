@@ -20,6 +20,7 @@ import AdminFlashSalesPage from "./pages/admin/AdminFlashSalesPage.jsx";
 import AdminBannersPage from "./pages/admin/AdminBannersPage.jsx";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage.jsx";
 import AdminHomepageSettingsPage from "./pages/admin/AdminHomepageSettingsPage.jsx";
+import AdminReturnRequestsPage from "./pages/admin/AdminReturnRequestsPage.jsx";
 
 // Customer Pages
 import HomePage from "./pages/HomePage.jsx";
@@ -149,7 +150,8 @@ export default function App() {
           <Route path="flash-sales" element={<AdminFlashSalesPage />} />
           <Route path="vouchers" element={<AdminVouchersPage />} />
           <Route path="banners" element={<AdminBannersPage />} />
-          <Route path="home-page-settings" element={<AdminHomepageSettingsPage />} />
+          <Route path="return-requests" element={<AdminReturnRequestsPage />} />
+          <Route path="homepage-settings" element={<AdminHomepageSettingsPage />} />
         </Route>
 
         {/* 404 Catch All Route */}

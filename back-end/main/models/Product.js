@@ -39,6 +39,7 @@ const productSchema = new mongoose.Schema(
       screen: { type: String, default: "" },
       mainboard: { type: String, default: "" },
       psu: { type: String, default: "" },
+      other: { type: String, default: "" }, // thông số không thuộc nhóm trên (phụ kiện, ghế, lót chuột...)
     },
 
     // ─── Giá ──────────────────────────────────────────────────────────────────

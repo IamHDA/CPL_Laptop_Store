@@ -24,6 +24,7 @@ const SPEC_ROWS = [
   { key: "screen", label: "Màn hình", get: (p) => p.specifications?.screen },
   { key: "mainboard", label: "Mainboard", get: (p) => p.specifications?.mainboard },
   { key: "psu", label: "Nguồn", get: (p) => p.specifications?.psu },
+  { key: "other", label: "Thông số khác", get: (p) => p.specifications?.other },
 ];
 
 function ProductOption({ product, checked, disabled, onToggle }) {

@@ -87,6 +87,15 @@ const NAV = [
     ),
   },
   {
+    to: "/admin/return-requests",
+    label: "Yêu cầu trả hàng",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <polyline points="9 14 4 9 9 4" /><path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+      </svg>
+    ),
+  },
+  {
     to: "/admin/banners",
     label: "Banners",
     icon: (
@@ -116,6 +125,7 @@ const PAGE_TITLES = {
   "/admin/categories":   "Quản lý danh mục",
   "/admin/vouchers":     "Quản lý Voucher",
   "/admin/flash-sales":  "Quản lý Flash Sale",
+  "/admin/return-requests": "Yêu cầu trả hàng",
   "/admin/banners":      "Quản lý Banner",
   "/admin/homepage-settings": "Bố cục trang chủ",
 };

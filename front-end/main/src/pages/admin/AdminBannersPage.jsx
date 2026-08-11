@@ -3,12 +3,15 @@ import { toast } from "react-toastify";
 import axiosClient from "../../lib/api";
 
 const POSITIONS = [
-  { value: "homepage",    label: "Trang chủ" },
-  { value: "laptop-gaming",    label: "Laptop Gaming" },
-  { value: "laptop-van-phong", label: "Laptop Văn Phòng" },
-  { value: "vga-card-do-hoa",  label: "VGA - Card Đồ Họa" },
-  { value: "cpu-bo-vi-xu-ly",  label: "CPU - Bộ Vi Xử Lý" },
-  { value: "ram-ssd",          label: "RAM & Ổ Cứng SSD" },
+  { value: "homepage",           label: "Trang chủ" },
+  { value: "laptop-gaming",      label: "Laptop Gaming" },
+  { value: "laptop-van-phong",   label: "Laptop Văn Phòng" },
+  { value: "laptop-do-hoa",      label: "Laptop Đồ Họa" },
+  { value: "vga-card-do-hoa",    label: "VGA Card Đồ Họa" },
+  { value: "cpu-bo-vi-xu-ly",    label: "CPU Bộ Vi Xử Lý" },
+  { value: "ram-o-cung-ssd",     label: "RAM & Ổ Cứng SSD" },
+  { value: "man-hinh-may-tinh",  label: "Màn Hình Máy Tính" },
+  { value: "phu-kien-gaming",    label: "Phụ Kiện Gaming" },
 ];
 
 /* ─── Toggle ─────────────────────────────────────────────────────── */
