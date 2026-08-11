@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  AppleLogo,
+  StoreLogo,
   SearchIcon,
   TruckIcon,
   ClockIcon,
@@ -407,7 +407,7 @@ function Navbar({ scrolled, cartCount, isLoggedIn, isAdmin, userInitial }) {
           aria-label="HK Tech - Trang chủ"
         >
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <AppleLogo size={30} />
+            <StoreLogo size={30} />
           </motion.div>
         </Link>
 

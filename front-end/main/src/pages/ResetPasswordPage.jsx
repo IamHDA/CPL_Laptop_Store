@@ -6,7 +6,7 @@ import axios from "axios";
 import { API_URL } from "../lib/api";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { AppleLogo } from "../components/icons";
+import { StoreLogo } from "../components/icons";
 
 const SF_FONT =
   "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif";
@@ -141,7 +141,7 @@ export default function ResetPasswordPage() {
               {/* Logo + heading */}
               <div className="mb-7 flex flex-col items-center">
                 <div className="mb-3 text-[#1d1d1f]">
-                  <AppleLogo size={36} />
+                  <StoreLogo size={36} />
                 </div>
                 <h1
                   className="text-[#1d1d1f] tracking-tight"

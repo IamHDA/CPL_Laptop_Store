@@ -9,7 +9,7 @@ import { ImageWithFallback } from "../components/ImageWithFallback";
 import { staggerContainer, staggerItem } from "../lib/animations";
 import { API_URL } from "../lib/api";
 import { getDisplayPrice } from "../lib/pricing";
-import { AppleLogo } from "../components/icons";
+import { StoreLogo } from "../components/icons";
 import { formatCurrency } from "../lib/format";
 
 const SF_FONT = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif";
@@ -185,7 +185,7 @@ export default function CategoryPage() {
           {/* Category Logo & Title
           <div className="flex justify-center items-center gap-2 mb-8 text-[#1d1d1f]">
             <div className="flex-shrink-0 flex items-center justify-center pb-1">
-              <AppleLogo size={32} />
+              <StoreLogo size={32} />
             </div>
             <h1 className="text-[32px] font-semibold tracking-tight leading-none">{meta.name}</h1>
           </div> */}

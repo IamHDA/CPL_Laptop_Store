@@ -32,7 +32,7 @@ export default function Categories() {
             className="text-[#1d1d1f] tracking-tight"
             style={{ fontSize: "32px", fontWeight: 600 }}
           >
-            Apple Categories
+            Danh mục sản phẩm
           </h2>
         </div> */}
 

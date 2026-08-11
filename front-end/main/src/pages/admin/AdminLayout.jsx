@@ -172,7 +172,7 @@ export default function AdminLayout() {
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#1d1d1f] text-white text-sm font-bold">A</div>
           <div>
             <p className="text-[13px] font-semibold text-[#1d1d1f]">Admin Panel</p>
-            <p className="text-[11px] text-[#8e8e93]">Apple Store VN</p>
+            <p className="text-[11px] text-[#8e8e93]">HK Tech · Laptop Store</p>
           </div>
         </div>
 

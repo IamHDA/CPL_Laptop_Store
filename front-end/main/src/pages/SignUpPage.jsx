@@ -6,7 +6,7 @@ import axios from "axios";
 import { API_URL } from "../lib/api";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { AppleLogo } from "../components/icons";
+import { StoreLogo } from "../components/icons";
 
 const SF_FONT =
   "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif";
@@ -421,7 +421,7 @@ export default function SignUpPage() {
               {/* Logo + heading (chỉ hiện ở step form) */}
               {step === "form" && (
                 <div className="flex flex-col items-center mb-7">
-                  <div className="mb-3 text-[#1d1d1f]"><AppleLogo size={36} /></div>
+                  <div className="mb-3 text-[#1d1d1f]"><StoreLogo size={36} /></div>
                   <h1 className="text-[#1d1d1f] tracking-tight" style={{ fontSize: "22px", fontWeight: 650 }}>
                     Tạo tài khoản
                   </h1>
@@ -431,7 +431,7 @@ export default function SignUpPage() {
 
               {step === "otp" && (
                 <div className="mb-3 flex justify-center text-[#1d1d1f]">
-                  <AppleLogo size={32} />
+                  <StoreLogo size={32} />
                 </div>
               )}
 
