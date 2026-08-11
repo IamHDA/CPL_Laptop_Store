@@ -35,12 +35,11 @@ function ProductOption({ product, checked, disabled, onToggle }) {
     <button
       type="button"
       onClick={onToggle}
-      disabled={disabled && !checked}
-      className={`flex h-full flex-col overflow-hidden rounded-2xl border bg-white text-left transition-all ${
+      className={`flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border bg-white text-left transition-all ${
         checked
           ? "border-[#1d1d1f] shadow-[0_8px_28px_rgba(0,0,0,0.08)]"
           : "border-black/[0.06] hover:border-black/[0.18]"
-      } ${disabled && !checked ? "cursor-not-allowed opacity-45" : "cursor-pointer"}`}
+      } ${disabled && !checked ? "opacity-45" : ""}`}
     >
       <div className="flex h-36 items-center justify-center bg-[#f5f5f7] p-4">
         <ImageWithFallback src={image} alt={product.name} className="max-h-full w-auto object-contain" />
@@ -134,6 +133,7 @@ export default function ComparePage() {
   // Bảng kết quả là một màn riêng, không nằm dưới lưới 42 sản phẩm — trước đó
   // phải cuộn qua hết lưới mới thấy bảng.
   const [showResult, setShowResult] = useState(false);
+  const [warning, setWarning] = useState("");
 
   useEffect(() => {
     Promise.all([
@@ -185,25 +185,30 @@ export default function ComparePage() {
     });
   }, [products, categorySlug, query]);
 
-  const selectedCategoryNames = new Set(
-    products.filter((product) => selectedIds.includes(product._id)).map((product) => product.category?.slug),
-  );
-  const mixedCategory = selectedCategoryNames.size > 1;
+  // Sản phẩm đầu tiên khoá danh mục cho cả lượt so sánh
+  const lockedCategory = selectedIds.length
+    ? products.find((p) => p._id === selectedIds[0])?.category ?? null
+    : null;
 
   const toggleProduct = (product) => {
-    setSelectedIds((prev) => {
-      if (prev.includes(product._id)) return prev.filter((id) => id !== product._id);
-      const firstSelected = products.find((item) => item._id === prev[0]);
-      if (firstSelected && firstSelected.category?.slug !== product.category?.slug) {
-        toast.info("Vui lòng chọn các sản phẩm cùng danh mục để so sánh.");
-        return prev;
-      }
-      if (prev.length >= 3) {
-        toast.info("Chỉ chọn tối đa 3 sản phẩm để so sánh.");
-        return prev;
-      }
-      return [...prev, product._id];
-    });
+    if (selectedIds.includes(product._id)) {
+      setSelectedIds((prev) => prev.filter((id) => id !== product._id));
+      setWarning("");
+      return;
+    }
+    if (lockedCategory && product.category?.slug !== lockedCategory.slug) {
+      setWarning(
+        `"${product.name}" thuộc ${product.category?.name || "danh mục khác"}. ` +
+          `Chỉ so sánh được các sản phẩm cùng danh mục ${lockedCategory.name}.`,
+      );
+      return;
+    }
+    if (selectedIds.length >= 3) {
+      setWarning("Chỉ so sánh được tối đa 3 sản phẩm cùng lúc.");
+      return;
+    }
+    setWarning("");
+    setSelectedIds((prev) => [...prev, product._id]);
   };
 
   return (
@@ -299,9 +304,30 @@ export default function ComparePage() {
               )}
             </div>
 
-            {mixedCategory && (
-              <div className="border-b border-[#fde68a] bg-[#fffbeb] px-4 py-3 text-sm text-[#92400e]">
-                Nên chọn các sản phẩm cùng danh mục để bảng so sánh chính xác hơn.
+            {warning && (
+              <div className="flex items-start gap-2.5 border-b border-[#fde68a] bg-[#fffbeb] px-4 py-3 text-sm text-[#92400e]">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 shrink-0">
+                  <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <span className="flex-1">{warning}</span>
+                <button
+                  type="button"
+                  onClick={() => setWarning("")}
+                  className="shrink-0 text-[#92400e]/60 hover:text-[#92400e]"
+                  aria-label="Đóng cảnh báo"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            )}
+
+            {lockedCategory && !warning && (
+              <div className="border-b border-black/[0.06] bg-[#f5f5f7] px-4 py-2.5 text-[13px] text-[#6e6e73]">
+                Đang so sánh trong danh mục <span className="font-semibold text-[#1d1d1f]">{lockedCategory.name}</span>.
+                Bỏ chọn hết để đổi sang danh mục khác.
               </div>
             )}
 
@@ -319,7 +345,10 @@ export default function ComparePage() {
                       key={product._id}
                       product={product}
                       checked={selectedIds.includes(product._id)}
-                      disabled={selectedIds.length >= 3}
+                      disabled={
+                        selectedIds.length >= 3 ||
+                        (lockedCategory && product.category?.slug !== lockedCategory.slug)
+                      }
                       onToggle={() => toggleProduct(product)}
                     />
                   ))}

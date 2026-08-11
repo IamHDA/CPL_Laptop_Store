@@ -12,17 +12,12 @@ import {
 } from "../icons";
 import { getCartCount } from "../../lib/cart";
 import axiosClient from "../../lib/api";
+import { resolveImageUrl } from "../ImageWithFallback";
 
 /* ─── Nav items ──────────────────────────────────────────────────── */
-// Menu dựng từ /api/categories thay vì hardcode. Danh sách cũ đứng yên trong khi
-// danh mục trong DB đổi: thiếu Đồ Họa / Màn Hình / Phụ Kiện, và "RAM & SSD" còn
-// trỏ /categories/ram-ssd trong khi slug thật là ram-o-cung-ssd — bấm vào ra
-// trang trống không sản phẩm, không banner.
 const STATIC_NAV = [{ label: "So sánh", to: "/compare" }];
 
-// Tên danh mục đầy đủ quá dài cho thanh nav ngang. Map này chỉ rút gọn nhãn và
-// luôn có fallback về tên thật, nên danh mục mới thêm vẫn hiện đúng — khác với
-// danh sách hardcode cũ, thiếu một mục là mục đó biến mất khỏi menu.
+// Nhãn ngắn cho nav; thiếu slug nào thì fallback về tên đầy đủ.
 const SHORT_LABEL = {
   "laptop-gaming": "Gaming",
   "laptop-van-phong": "Văn Phòng",
@@ -522,7 +517,7 @@ function Navbar({ scrolled, cartCount, isLoggedIn, isAdmin, userInitial }) {
                         >
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#f5f5f7]">
                             {p.images?.[0]?.url && (
-                              <img src={p.images[0].url} alt={p.name} className="max-h-full w-auto object-contain" />
+                              <img src={resolveImageUrl(p.images[0].url)} alt={p.name} className="max-h-full w-auto object-contain" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">

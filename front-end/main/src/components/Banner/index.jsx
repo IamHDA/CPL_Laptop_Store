@@ -5,11 +5,6 @@ import { API_URL } from "../../lib/api";
 const AUTOPLAY_MS = 4500;
 const BANNER_PATH = "/api/home-slides?position=homepage";
 
-// Dùng API_URL như mọi chỗ khác. Bản cũ thử lần lượt đường dẫn tương đối rồi
-// localhost:3000 — trên production đường dẫn tương đối rơi vào chính origin của
-// FE, bị vercel.json rewrite về index.html và trả HTTP 200 kèm HTML, nên
-// res.ok là true còn .json() thì ném lỗi. Hai fallback localhost sau đó cũng
-// không thể tới được từ máy người dùng.
 async function fetchBanners() {
   const url = `${API_URL}${BANNER_PATH}`;
   const res = await fetch(url, { cache: "no-store" });

@@ -6,6 +6,7 @@ import axiosClient from "../lib/api";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Breadcrumb from "../components/Breadcrumb";
+import { resolveImageUrl } from "../components/ImageWithFallback";
 
 const SF_FONT =
   "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif";
@@ -128,7 +129,7 @@ function Avatar({ name, avatarUrl, onUpload }) {
   return (
     <div className="relative h-20 w-20">
       {avatarUrl ? (
-        <img src={avatarUrl} alt="Avatar" className="h-full w-full rounded-full object-cover shadow-lg" />
+        <img src={resolveImageUrl(avatarUrl)} alt="Avatar" className="h-full w-full rounded-full object-cover shadow-lg" />
       ) : (
         <div className="flex h-full w-full items-center justify-center rounded-full bg-[#1d1d1f] text-[26px] font-bold text-white shadow-lg select-none">
           {initials}

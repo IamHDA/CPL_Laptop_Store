@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { ImageWithFallback } from "../components/ImageWithFallback";
+import { ImageWithFallback, resolveImageUrl } from "../components/ImageWithFallback";
 import { StarIcon } from "../components/icons";
 import { staggerContainer, staggerItem } from "../lib/animations";
 import { addToCart } from "../lib/cart";
@@ -714,7 +714,7 @@ export default function ProductDetailPage() {
                   <div className="grid grid-cols-4 gap-2">
                     {reviewForm.images.map((img, idx) => (
                       <div key={idx} className="group relative aspect-square overflow-hidden rounded-lg bg-[#f5f5f7]">
-                        <img src={img} alt={`preview-${idx}`} className="h-full w-full object-cover" />
+                        <img src={resolveImageUrl(img)} alt={`preview-${idx}`} className="h-full w-full object-cover" />
                         <button
                           type="button"
                           onClick={() => handleRemoveImage(idx)}
@@ -791,7 +791,7 @@ export default function ProductDetailPage() {
                             rel="noopener noreferrer"
                             className="group relative aspect-square overflow-hidden rounded-lg bg-[#f5f5f7]"
                           >
-                            <img src={img} alt={`review-${idx}`} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                            <img src={resolveImageUrl(img)} alt={`review-${idx}`} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
                             <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/40 group-hover:opacity-100">
                               <svg width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="white" strokeWidth="2">
                                 <circle cx="12" cy="12" r="1"/><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>

@@ -7,9 +7,8 @@ const productSchema = new mongoose.Schema(
       required: true,
       trim: true,
       maxlength: 200,
-      // Không khai báo index: "text" ở đây — MongoDB chỉ cho một text index mỗi
-      // collection, khai báo inline sẽ chiếm chỗ và làm text index tổng hợp ở
-      // cuối file không bao giờ được tạo (search chỉ khớp mỗi name).
+      // Không đặt index: "text" ở đây — MongoDB chỉ cho 1 text index/collection,
+      // nó sẽ chiếm chỗ của index tổng hợp ở cuối file.
     },
     slug: {
       type: String,

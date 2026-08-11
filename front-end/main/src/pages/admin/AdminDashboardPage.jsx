@@ -11,6 +11,16 @@ function fmtNum(n) {
   return new Intl.NumberFormat("vi-VN").format(n);
 }
 
+// Doanh thu đầy đủ dài tới "5.418.533.755 ₫", nhét cạnh mỗi cột thì tràn.
+// Rút gọn cho nhãn, giá trị đầy đủ vẫn nằm ở tooltip khi hover.
+function fmtCompact(n) {
+  const v = Number(n) || 0;
+  if (v >= 1e9) return `${(v / 1e9).toFixed(1).replace(".", ",")} tỷ`;
+  if (v >= 1e6) return `${Math.round(v / 1e6)} tr`;
+  if (v >= 1e3) return `${Math.round(v / 1e3)}K`;
+  return fmtNum(v);
+}
+
 const MONTH_LABELS = ["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","T11","T12"];
 
 /* ── Low Stock Panel ── */
@@ -82,31 +92,35 @@ function StatCard({ label, value, sub }) {
   );
 }
 
-/* ── Revenue Bar Chart ── */
-function RevenueChart({ data }) {
+/* ── Biểu đồ cột theo tháng ──────────────────────────────────────────────────
+   Một component dùng cho cả Lợi nhuận lẫn Đơn hàng. Trước đây là hai component
+   RevenueChart/OrderCountChart giống hệt nhau, chỉ khác tên field và màu. */
+function MonthlyBarChart({ data, valueKey, color, formatValue, emptyText, unit = "" }) {
   if (!data || data.length === 0) {
-    return <p className="py-12 text-center text-sm text-[#8e8e93]">Chưa có dữ liệu lợi nhuận</p>;
+    return <p className="py-12 text-center text-sm text-[#8e8e93]">{emptyText}</p>;
   }
-  const max = Math.max(...data.map((d) => d.profit || 0), 1);
+  const max = Math.max(...data.map((d) => d[valueKey] || 0), 1);
 
   return (
-    <div className="flex items-end gap-2 h-36 pt-2">
+    <div className="flex h-36 items-end gap-2 pt-2">
       {MONTH_LABELS.map((label, i) => {
         const month = i + 1;
-        const found = data.find((d) => d._id?.month === month);
-        const profit = found?.profit || 0;
-        const height = Math.max((profit / max) * 100, profit > 0 ? 4 : 0);
+        const value = data.find((d) => d._id?.month === month)?.[valueKey] || 0;
+        const height = Math.max((value / max) * 100, value > 0 ? 4 : 0);
         return (
-          <div key={month} className="flex flex-1 flex-col items-center gap-1 group">
-            <div className="relative w-full flex items-end justify-center" style={{ height: "112px" }}>
-              {profit > 0 && (
-                <div className="absolute bottom-full mb-1 hidden group-hover:block bg-[#1d1d1f] text-white text-[10px] rounded-lg px-2 py-1 whitespace-nowrap z-10">
-                  {fmt(profit)}
+          <div key={month} className="group flex flex-1 flex-col items-center gap-1">
+            <div className="relative flex w-full items-end justify-center" style={{ height: "112px" }}>
+              {value > 0 && (
+                <div
+                  className="absolute bottom-full z-10 mb-1 hidden whitespace-nowrap rounded-lg px-2 py-1 text-[10px] text-white group-hover:block"
+                  style={{ backgroundColor: color }}
+                >
+                  {formatValue(value)}{unit}
                 </div>
               )}
               <div
-                className="w-full rounded-t-lg bg-[#1d1d1f] transition-all duration-500"
-                style={{ height: `${height}%`, minHeight: profit > 0 ? "4px" : "0" }}
+                className="w-full rounded-t-lg transition-all duration-500"
+                style={{ height: `${height}%`, minHeight: value > 0 ? "4px" : "0", backgroundColor: color }}
               />
             </div>
             <span className="text-[10px] text-[#8e8e93]">{label}</span>
@@ -117,37 +131,90 @@ function RevenueChart({ data }) {
   );
 }
 
-/* ── Order Count Bar Chart ── */
-function OrderCountChart({ data }) {
-  if (!data || data.length === 0) {
-    return <p className="py-12 text-center text-sm text-[#8e8e93]">Chưa có dữ liệu đơn hàng</p>;
+/* ── Biểu đồ ngang: đơn hàng theo trạng thái ─────────────────────────────────
+   Trạng thái là nhóm rời rạc chứ không phải chuỗi thời gian, nên cột ngang đọc
+   dễ hơn cột dọc: nhãn tiếng Việt nằm ngang, không phải xoay chữ.
+
+   Bảng màu đã chạy qua validator của skill dataviz (lightness band, chroma
+   floor, tách màu cho người mù màu, tương phản nền) — pass cả 5. Điểm mấu chốt:
+   "Đã giao" xanh lá và "Đã huỷ" đỏ nằm cạnh nhau là cặp khó nhất với người mù
+   màu deutan, phải tách bằng chênh lệch độ sáng (xanh sáng #2da44e vs đỏ sẫm
+   #a40e26) thì mới đạt. Dù vậy màu vẫn chỉ là phụ: mỗi thanh đều có nhãn chữ. */
+const ORDER_STATUS = [
+  { key: "PendingPayment", label: "Chờ thanh toán", color: "#8250df" },
+  { key: "Pending",        label: "Chờ xác nhận",   color: "#bf8700" },
+  { key: "Confirmed",      label: "Đã xác nhận",    color: "#bf3989" },
+  { key: "Shipped",        label: "Đang giao",      color: "#0969da" },
+  { key: "Delivered",      label: "Đã giao",        color: "#2da44e" },
+  { key: "Cancelled",      label: "Đã huỷ",         color: "#a40e26" },
+];
+
+function OrderStatusChart({ data }) {
+  const counts = Object.fromEntries((data || []).map((d) => [d._id, d.count || 0]));
+  const total = Object.values(counts).reduce((s, n) => s + n, 0);
+
+  if (total === 0) {
+    return <p className="py-12 text-center text-sm text-[#8e8e93]">Chưa có đơn hàng nào</p>;
   }
-  const max = Math.max(...data.map((d) => d.orderCount || 0), 1);
+  const max = Math.max(...ORDER_STATUS.map((s) => counts[s.key] || 0), 1);
 
   return (
-    <div className="flex items-end gap-2 h-36 pt-2">
-      {MONTH_LABELS.map((label, i) => {
-        const month = i + 1;
-        const found = data.find((d) => d._id?.month === month);
-        const count = found?.orderCount || 0;
-        const height = Math.max((count / max) * 100, count > 0 ? 4 : 0);
+    <div className="space-y-2.5">
+      {ORDER_STATUS.map((s) => {
+        const count = counts[s.key] || 0;
+        const pct = (count / total) * 100;
         return (
-          <div key={month} className="flex flex-1 flex-col items-center gap-1 group">
-            <div className="relative w-full flex items-end justify-center" style={{ height: "112px" }}>
-              {count > 0 && (
-                <div className="absolute bottom-full mb-1 hidden group-hover:block bg-[#0071e3] text-white text-[10px] rounded-lg px-2 py-1 whitespace-nowrap z-10">
-                  {fmtNum(count)} đơn
-                </div>
-              )}
+          <div key={s.key} className="group flex items-center gap-3">
+            <span className="w-[110px] shrink-0 text-[12px] text-[#3a3a3c]">{s.label}</span>
+            <div className="h-5 flex-1 overflow-hidden rounded-md bg-[#f5f5f7]">
               <div
-                className="w-full rounded-t-lg bg-[#0071e3] transition-all duration-500"
-                style={{ height: `${height}%`, minHeight: count > 0 ? "4px" : "0" }}
+                className="h-full rounded-md transition-all duration-500 group-hover:opacity-80"
+                style={{ width: `${Math.max((count / max) * 100, count > 0 ? 2 : 0)}%`, backgroundColor: s.color }}
+                title={`${s.label}: ${fmtNum(count)} đơn (${pct.toFixed(1)}%)`}
               />
             </div>
-            <span className="text-[10px] text-[#8e8e93]">{label}</span>
+            <span className="w-[86px] shrink-0 text-right text-[12px] tabular-nums text-[#1d1d1f]">
+              <span className="font-semibold">{fmtNum(count)}</span>
+              <span className="ml-1 text-[#8e8e93]">{pct.toFixed(0)}%</span>
+            </span>
           </div>
         );
       })}
+      <p className="pt-1 text-[11px] text-[#8e8e93]">Tổng {fmtNum(total)} đơn</p>
+    </div>
+  );
+}
+
+/* ── Biểu đồ ngang: doanh thu theo danh mục ──────────────────────────────────
+   Một chuỗi dữ liệu duy nhất nên dùng một màu, không cần legend — tiêu đề đã
+   nói rõ đang đo gì. Tô mỗi cột một màu ở đây chỉ là màu mè, không mã hoá thêm
+   thông tin gì. */
+function CategoryRevenueChart({ data }) {
+  const rows = (data || []).filter((d) => (d.revenue || 0) > 0);
+  if (rows.length === 0) {
+    return <p className="py-12 text-center text-sm text-[#8e8e93]">Chưa có doanh thu theo danh mục</p>;
+  }
+  const max = Math.max(...rows.map((d) => d.revenue), 1);
+
+  return (
+    <div className="space-y-2.5">
+      {rows.map((d) => (
+        <div key={d.categoryId || d.categoryName} className="group flex items-center gap-3">
+          <span className="w-[110px] shrink-0 truncate text-[12px] text-[#3a3a3c]" title={d.categoryName}>
+            {d.categoryName}
+          </span>
+          <div className="h-5 flex-1 overflow-hidden rounded-md bg-[#f5f5f7]">
+            <div
+              className="h-full rounded-md bg-[#0071e3] transition-all duration-500 group-hover:opacity-80"
+              style={{ width: `${Math.max((d.revenue / max) * 100, 2)}%` }}
+              title={`${d.categoryName}: ${fmt(d.revenue)} · ${fmtNum(d.quantity || 0)} sản phẩm`}
+            />
+          </div>
+          <span className="w-[86px] shrink-0 text-right text-[12px] font-semibold tabular-nums text-[#1d1d1f]">
+            {fmtCompact(d.revenue)}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -158,6 +225,8 @@ export default function AdminDashboardPage() {
   const [topProducts, setTopProducts] = useState([]);
   const [lowStock, setLowStock] = useState([]);
   const [recentOrders, setRecentOrders] = useState([]);
+  const [ordersByStatus, setOrdersByStatus] = useState([]);
+  const [byCategory, setByCategory] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -197,13 +266,19 @@ export default function AdminDashboardPage() {
       axiosClient.get(`/api/admin/stats/top-products${qStr}&limit=5`),
       axiosClient.get("/api/admin/stats/low-stock?threshold=10&limit=200"),
       axiosClient.get("/api/admin/orders?limit=5"),
+      // by-category nhận cùng bộ lọc ngày; orders-by-status thì không có tham số
+      // lọc ở back-end nên luôn là tổng toàn thời gian.
+      axiosClient.get(`/api/admin/stats/by-category${qStr}`),
+      axiosClient.get("/api/admin/stats/orders-by-status"),
     ])
-      .then(([ov, rev, top, low, ord]) => {
+      .then(([ov, rev, top, low, ord, cat, sts]) => {
         setOverview(ov.data.data);
         setRevenue(rev.data.data || []);
         setTopProducts(top.data.data || []);
         setLowStock(low.data.data || []);
         setRecentOrders(ord.data.data?.orders || []);
+        setByCategory(cat.data.data || []);
+        setOrdersByStatus(sts.data.data || []);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -305,14 +380,46 @@ export default function AdminDashboardPage() {
               </div>
 
               {activeChartTab === "profit" ? (
-                <RevenueChart data={revenue} />
+                <MonthlyBarChart
+                  data={revenue}
+                  valueKey="profit"
+                  color="#1d1d1f"
+                  formatValue={fmt}
+                  emptyText="Chưa có dữ liệu lợi nhuận"
+                />
               ) : (
-                <OrderCountChart data={revenue} />
+                <MonthlyBarChart
+                  data={revenue}
+                  valueKey="orderCount"
+                  color="#0071e3"
+                  formatValue={fmtNum}
+                  unit=" đơn"
+                  emptyText="Chưa có dữ liệu đơn hàng"
+                />
               )}
             </div>
 
             {/* Low stock */}
             <LowStockPanel items={lowStock} />
+          </div>
+
+          {/* ── Đơn theo trạng thái + Doanh thu theo danh mục ── */}
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+              <div className="mb-4 flex items-baseline justify-between">
+                <h2 className="text-[15px] font-semibold text-[#1d1d1f]">Đơn hàng theo trạng thái</h2>
+                <span className="text-xs text-[#8e8e93]">Toàn thời gian</span>
+              </div>
+              <OrderStatusChart data={ordersByStatus} />
+            </div>
+
+            <div className="rounded-2xl border border-black/[0.06] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+              <div className="mb-4 flex items-baseline justify-between">
+                <h2 className="text-[15px] font-semibold text-[#1d1d1f]">Doanh thu theo danh mục</h2>
+                <span className="text-xs text-[#8e8e93]">Hover để xem đầy đủ</span>
+              </div>
+              <CategoryRevenueChart data={byCategory} />
+            </div>
           </div>
 
           {/* ── Top products + Recent orders ── */}

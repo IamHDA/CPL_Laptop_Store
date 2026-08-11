@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { toast } from "react-toastify";
 import axiosClient from "../../lib/api";
-import { ImageWithFallback } from "../../components/ImageWithFallback";
+import { ImageWithFallback, resolveImageUrl } from "../../components/ImageWithFallback";
 import { getDisplayPrice } from "../../lib/pricing";
 import { SearchIcon } from "../../components/icons";
 
@@ -244,7 +244,7 @@ function ProductDrawer({ categories, onClose, onSave }) {
               />
               {imagePreview && (
                 <div className="mt-3 rounded-lg overflow-hidden border border-black/[0.1]">
-                  <img src={imagePreview} alt="Preview" className="w-full h-40 object-cover" />
+                  <img src={resolveImageUrl(imagePreview)} alt="Preview" className="w-full h-40 object-cover" />
                 </div>
               )}
             </div>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axiosClient from "../../lib/api";
+import { resolveImageUrl } from "../../components/ImageWithFallback";
 
 function fmtDate(d) {
   return new Date(d).toLocaleDateString("vi-VN", {
@@ -40,7 +41,7 @@ function ImagePreviewModal({ image, onClose }) {
         </svg>
       </button>
       <img
-        src={image}
+        src={resolveImageUrl(image)}
         alt="Ảnh đánh giá phóng to"
         className="max-h-[88vh] max-w-[92vw] rounded-xl bg-white object-contain shadow-2xl"
         onClick={(e) => e.stopPropagation()}
@@ -146,7 +147,7 @@ function ReviewRow({ review, onChanged, onPreviewImage }) {
                         title="Click để phóng to"
                       >
                         <img
-                          src={img}
+                          src={resolveImageUrl(img)}
                           alt={`review-${index}`}
                           className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
                         />

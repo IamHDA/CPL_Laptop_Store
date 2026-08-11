@@ -48,9 +48,7 @@ app.use(
   }),
 );
 
-// CLIENT_URL nhận nhiều origin cách nhau bởi dấu phẩy: Vercel cấp cho front-end
-// vài hostname (…-omega, …-git-main-…, domain riêng) và chỉ khai báo một cái thì
-// những cái còn lại bị CORS chặn.
+// CLIENT_URL nhận nhiều origin cách nhau bởi dấu phẩy.
 const ALLOWED_ORIGINS = (process.env.CLIENT_URL || "")
   .split(",")
   .map((o) => o.trim().replace(/\/$/, ""))
@@ -97,8 +95,7 @@ const searchLimit = rateLimit({
   message: { success: false, message: "Quá nhiều yêu cầu tìm kiếm." },
 });
 
-// Kết nối MongoDB — không await ở đây, mongoose tự buffer query cho tới khi kết nối
-// xong. Bắt lỗi để một lần connect hỏng không thành unhandled rejection giết cả lambda.
+// Không await: mongoose tự buffer query cho tới khi kết nối xong.
 connectDB().catch((err) => console.error("[DB] Không kết nối được MongoDB:", err.message));
 
 // ── No-store cho API nhạy cảm (route handler có thể override bằng res.set) ─────
@@ -146,9 +143,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Chỉ mở cổng khi chạy trực tiếp (`node app.js` / `npm run dev`).
-// Trên Vercel, app được api/index.js export ra làm serverless handler — gọi
-// listen() ở đó vừa vô nghĩa vừa làm function treo cho tới khi hết timeout.
+// Trên Vercel app chạy như serverless handler, không được listen().
 if (require.main === module) {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {

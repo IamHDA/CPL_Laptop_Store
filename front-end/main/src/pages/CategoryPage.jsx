@@ -4,22 +4,15 @@ import { motion } from "framer-motion";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import Breadcrumb from "../components/Breadcrumb";
-import { ImageWithFallback } from "../components/ImageWithFallback";
+import { ImageWithFallback, resolveImageUrl } from "../components/ImageWithFallback";
 import { staggerContainer, staggerItem } from "../lib/animations";
 import { API_URL } from "../lib/api";
 import { getDisplayPrice } from "../lib/pricing";
-import { StoreLogo } from "../components/icons";
 import { formatCurrency } from "../lib/format";
 
 const SF_FONT = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif";
 
 const PAGE_SIZE = 12;
-
-// Không hardcode danh sách danh mục ở đây nữa. Bản cũ giữ một map 5 slug và dùng
-// nó làm cổng 404, nên mọi danh mục thêm sau (Đồ Họa, Màn Hình, Phụ Kiện) đều bị
-// đá về /not-found, còn "ram-ssd" thì lọt qua dù slug thật là "ram-o-cung-ssd" —
-// trang mở được nhưng không có sản phẩm lẫn banner. Giờ hỏi thẳng API.
 
 const SORT_OPTIONS = [
   { value: "newest",      label: "Mới" },
@@ -126,8 +119,6 @@ export default function CategoryPage() {
     fetch(`${API_URL}/api/products/filter/category?categorySlug=${slug}&page=${currentPage}&limit=${PAGE_SIZE}&sort=${sortBy}${searchParam}`)
       .then((r) => r.json())
       .then((json) => {
-        // API trả 404 khi slug không tồn tại — đó là nguồn sự thật duy nhất cho
-        // việc danh mục có thật hay không.
         if (json.success === false) {
           navigate("/not-found", { replace: true });
           return;
@@ -165,38 +156,18 @@ export default function CategoryPage() {
       style={{ fontFamily: SF_FONT }}
     >
       <Header />
-      
-      {/* <div className="bg-[#fafafa]">
-        <div className="max-w-[1200px] mx-auto text-[#1d1d1f]">
-          <Breadcrumb
-            items={[
-              { label: "Trang chủ", to: "/" },
-              { label: "Sản phẩm", to: "/products" },
-              { label: meta.name },
-            ]}
-          />
-        </div>
-      </div> */}
 
       <main className="pb-20">
         <section className="mx-auto max-w-[1200px] px-4 md:px-8">
-          {/* Category Logo & Title
-          <div className="flex justify-center items-center gap-2 mb-8 text-[#1d1d1f]">
-            <div className="flex-shrink-0 flex items-center justify-center pb-1">
-              <StoreLogo size={32} />
-            </div>
-            <h1 className="text-[32px] font-semibold tracking-tight leading-none">{meta.name}</h1>
-          </div> */}
-
           {/* Banner Slider */}
           {banners.length > 0 ? (
             <div className="relative w-full rounded-2xl overflow-hidden mb-8 group bg-white border border-black/[0.04]">
               {banners[bannerIdx].linkUrl ? (
                 <a href={banners[bannerIdx].linkUrl}>
-                  <img src={banners[bannerIdx].imageUrl} alt={banners[bannerIdx].title} className="w-full h-auto block" />
+                  <img src={resolveImageUrl(banners[bannerIdx].imageUrl)} alt={banners[bannerIdx].title} className="w-full h-auto block" />
                 </a>
               ) : (
-                <img src={banners[bannerIdx].imageUrl} alt={banners[bannerIdx].title} className="w-full h-auto block" />
+                <img src={resolveImageUrl(banners[bannerIdx].imageUrl)} alt={banners[bannerIdx].title} className="w-full h-auto block" />
               )}
               {banners.length > 1 && (
                 <>

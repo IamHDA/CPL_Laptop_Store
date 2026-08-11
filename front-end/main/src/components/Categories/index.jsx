@@ -27,15 +27,6 @@ export default function Categories() {
   return (
     <section className="w-full bg-[#fafafa] pt-10">
       <motion.div className="max-w-[1200px] mx-auto px-6" {...fadeInUp}>
-        {/* <div className="flex mb-6">
-          <h2
-            className="text-[#1d1d1f] tracking-tight"
-            style={{ fontSize: "32px", fontWeight: 600 }}
-          >
-            Danh mục sản phẩm
-          </h2>
-        </div> */}
-
         <motion.div
           className="flex flex-wrap justify-center gap-2"
           variants={staggerContainer}
@@ -63,12 +54,6 @@ export default function Categories() {
                   >
                     {item.name}
                   </p>
-                  {/* <p
-                    className="text-[#86868b] text-center"
-                    style={{ fontSize: "12px", marginTop: "4px", lineHeight: 1.4 }}
-                  >
-                    {item.description}
-                  </p> */}
                 </div>
               </Link>
             </motion.div>

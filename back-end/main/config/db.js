@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 
-// Serverless: mỗi lambda được tái sử dụng cho nhiều request, nhưng module có thể
-// được nạp lại. Cache connection trên globalThis để không mở connection mới mỗi
-// lần cold start — Atlas free tier chỉ cho 500 connection, mở tràn là hết quota.
+// Cache trên globalThis để cold start không mở connection mới mỗi lần.
 const cache = (globalThis._mongooseCache ??= { conn: null, promise: null });
 
 const connectDB = async () => {

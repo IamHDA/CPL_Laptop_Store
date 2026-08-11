@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import axiosClient from "../../lib/api";
+import { resolveImageUrl } from "../../components/ImageWithFallback";
 
 /* ─── Toggle Switch ─────────────────────────────────────────────── */
 function Toggle({ checked, onChange, disabled }) {
@@ -116,7 +117,7 @@ function CategoryModal({ category, onClose, onSave }) {
             <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">URL ảnh danh mục</label>
             <input value={form.imageUrl} onChange={set("imageUrl")} placeholder="https://..." className={inputCls("imageUrl")} />
             {form.imageUrl && (
-              <img src={form.imageUrl} alt="preview" className="mt-2 h-16 w-auto rounded-lg border border-black/[0.06] object-contain"
+              <img src={resolveImageUrl(form.imageUrl)} alt="preview" className="mt-2 h-16 w-auto rounded-lg border border-black/[0.06] object-contain"
                 onError={(e) => { e.currentTarget.style.display = "none"; }} />
             )}
           </div>
@@ -328,7 +329,7 @@ export default function AdminCategoriesPage() {
                     {/* Ảnh */}
                     <td className="px-4 py-3">
                       {c.imageUrl ? (
-                        <img src={c.imageUrl} alt={c.name}
+                        <img src={resolveImageUrl(c.imageUrl)} alt={c.name}
                           className="h-10 w-10 rounded-lg border border-black/[0.06] object-contain bg-[#f5f5f7]"
                           onError={(e) => { e.currentTarget.style.display = "none"; }}
                         />

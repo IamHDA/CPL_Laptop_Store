@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "react-toastify";
 import axiosClient from "../../lib/api";
+import { resolveImageUrl } from "../../components/ImageWithFallback";
 
 const POSITIONS = [
   { value: "homepage",           label: "Trang chủ" },
@@ -127,7 +128,7 @@ function BannerModal({ banner, onClose, onSave }) {
             <input value={form.imageUrl} onChange={set("imageUrl")} placeholder="https://..." className={inputCls("imageUrl")} />
             {errors.imageUrl && <p className="mt-1 text-[11px] text-[#e53e3e]">{errors.imageUrl}</p>}
             {form.imageUrl && (
-              <img src={form.imageUrl} alt="preview"
+              <img src={resolveImageUrl(form.imageUrl)} alt="preview"
                 className="mt-2 h-20 w-full rounded-xl border border-black/[0.06] object-cover"
                 onError={(e) => { e.currentTarget.style.display = "none"; }}
               />
