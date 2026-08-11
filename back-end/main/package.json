@@ -7,7 +7,6 @@
     "seed:topzone": "node scripts/seed_topzone_products.js"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

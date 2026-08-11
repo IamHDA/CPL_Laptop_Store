@@ -38,7 +38,6 @@ import LoginPage from "./pages/LoginPage.jsx";
 import SignUpPage from "./pages/SignUpPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import PaymentResultPage from "./pages/PaymentResultPage.jsx";
-import OAuthCallbackPage from "./pages/OAuthCallbackPage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 /** Route Guard kiểm tra quyền Admin từ Server */
@@ -96,7 +95,6 @@ export default function App() {
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/forgot-password" element={<ResetPasswordPage />} />
         <Route path="/payment-result" element={<PaymentResultPage />} />
-        <Route path="/oauth/callback" element={<OAuthCallbackPage />} />
 
         {/* Protected Customer Routes */}
         <Route

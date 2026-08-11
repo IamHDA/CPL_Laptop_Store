@@ -30,7 +30,6 @@ const shippingRoutes = require("./routes/shippingRoutes");
 const imageRoutes = require("./routes/imageRoutes");
 const bannerRoutes = require("./routes/bannerRoutes");
 const settingsRoutes = require("./routes/settingsRoutes");
-const chatRoutes = require("./routes/chatRoutes");
 
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
@@ -97,16 +96,6 @@ const searchLimit = rateLimit({
   legacyHeaders: false,
   message: { success: false, message: "Quá nhiều yêu cầu tìm kiếm." },
 });
-const chatLimit = rateLimit({
-  windowMs: 5 * 60 * 1000, // 5 phút
-  max: 20,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    success: false,
-    message: "Bạn đang chat quá nhanh. Thử lại sau ít phút.",
-  },
-});
 
 // Kết nối MongoDB — không await ở đây, mongoose tự buffer query cho tới khi kết nối
 // xong. Bắt lỗi để một lần connect hỏng không thành unhandled rejection giết cả lambda.
@@ -143,7 +132,6 @@ app.use("/api/images", imageRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use("/api/home-slides", bannerRoutes);
 app.use("/api/settings", settingsRoutes);
-app.use("/api/chat", chatLimit, chatRoutes);
 
 // ── Global error handler ───────────────────────────────────────────────────────
 app.use((err, req, res, next) => {

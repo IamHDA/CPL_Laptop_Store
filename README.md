@@ -9,7 +9,7 @@ Hệ thống website thương mại điện tử chuyên kinh doanh Laptop & Thi
 ### **Back-end**
 - **Runtime**: Node.js (Express Framework)
 - **Database**: MongoDB (Mongoose ODM)
-- **Authentication**: JWT (JSON Web Tokens), Bcryptjs, Passport (Google OAuth 2.0)
+- **Authentication**: JWT (JSON Web Tokens), Bcryptjs
 - **Email Service**: Nodemailer (Xác thực OTP, Gửi email hóa đơn HTML)
 - **Payment Gateways**: VNPay Sandbox, Thanh toán COD, Chuyển khoản VietQR
 
