@@ -7,6 +7,7 @@ const ProductVariant = require("./models/ProductVariant");
 const User = require("./models/User");
 const slugify = require("./lib/slugify");
 
+const LOCAL = (name) => `/products/${name}.jpg`;
 const IMG = (id, w = 800) => `https://images.unsplash.com/${id}?w=${w}&q=80`;
 
 // Ảnh Unsplash đã kiểm tra HTTP 200 — gom lại để tái dùng theo nhóm sản phẩm
@@ -29,10 +30,13 @@ const PIC = {
   ssd2: IMG("photo-1625842268584-8f3296236761"),
   monitor1: IMG("photo-1527814050087-3793815479db"),
   monitor2: IMG("photo-1593305841991-05c297ba4575"),
-  gear1: IMG("photo-1618384887929-16ec33fab9ef"),
-  gear2: IMG("photo-1547082299-de196ea013d6"),
-  gear3: IMG("photo-1587831990711-23ca6441447b"),
-  gear4: IMG("photo-1526170375885-4d8ecf77b99f"),
+  // Phụ kiện dùng ảnh tải sẵn trong front-end/main/public/products/ — ảnh Unsplash
+  // chung chung trước đó cho ra ghế thành máy ảnh, tai nghe thành bàn làm việc.
+  keyboard: LOCAL("keyboard-keychron"),
+  mouse:    LOCAL("mouse-logitech"),
+  headset:  LOCAL("headset-gaming"),
+  chair:    LOCAL("chair-ergonomic"),
+  deskmat:  LOCAL("deskmat-xxl"),
 };
 
 const CATEGORIES = [
@@ -43,7 +47,7 @@ const CATEGORIES = [
   { name: "CPU Bộ Vi Xử Lý",       description: "Vi xử lý Intel Core & AMD Ryzen các thế hệ mới nhất",            sortOrder: 5, imageUrl: PIC.cpu1 },
   { name: "RAM & Ổ Cứng SSD",      description: "Bộ nhớ trong và ổ cứng lưu trữ tốc độ cao",                      sortOrder: 6, imageUrl: PIC.ssd1 },
   { name: "Màn Hình Máy Tính",     description: "Màn hình gaming tần số quét cao và màn đồ họa chuẩn màu",        sortOrder: 7, imageUrl: PIC.monitor1 },
-  { name: "Phụ Kiện Gaming",       description: "Chuột, bàn phím cơ, tai nghe và ghế công thái học",              sortOrder: 8, imageUrl: PIC.gear1 },
+  { name: "Phụ Kiện Gaming",       description: "Chuột, bàn phím cơ, tai nghe và ghế công thái học",              sortOrder: 8, imageUrl: PIC.keyboard },
 ];
 
 // basePrice = giá nhập (ẩn với khách) · salePrice = giá niêm yết · saleDiscount = % giảm trên salePrice
@@ -361,7 +365,7 @@ const PRODUCTS = [
   // ─── Phụ Kiện Gaming ────────────────────────────────────────────────────────
   {
     name: "Bàn phím cơ Keychron K8 Pro RGB", brand: "Keychron", cat: "phu-kien-gaming",
-    basePrice: 2100000, salePrice: 2890000, saleDiscount: 15, stock: 40, sold: 118, img: PIC.gear1,
+    basePrice: 2100000, salePrice: 2890000, saleDiscount: 15, stock: 40, sold: 118, img: PIC.keyboard,
     description: "Keychron K8 Pro hot-swap thay switch không cần hàn, kết nối được 3 thiết bị Bluetooth, dùng chung Mac và Windows.",
     specs: { other: "Layout TKL 87 phím · Hot-swap · Bluetooth 5.1 + USB-C · Switch Gateron G Pro" },
     tags: ["ban-phim", "keychron", "co", "hot-swap"],
@@ -373,7 +377,7 @@ const PRODUCTS = [
   },
   {
     name: "Chuột Logitech G Pro X Superlight 2", brand: "Logitech", cat: "phu-kien-gaming",
-    basePrice: 2600000, salePrice: 3490000, saleDiscount: 12, stock: 35, sold: 143, img: PIC.gear2,
+    basePrice: 2600000, salePrice: 3490000, saleDiscount: 12, stock: 35, sold: 143, img: PIC.mouse,
     description: "G Pro X Superlight 2 nặng 60g với cảm biến HERO 2 32K DPI, pin 95 giờ, chuột được nhiều tuyển thủ chuyên nghiệp chọn.",
     specs: { other: "Không dây LIGHTSPEED · 60g · Cảm biến HERO 2 32000 DPI · Pin 95 giờ" },
     tags: ["chuot", "logitech", "khong-day", "esports", "hot"],
@@ -384,21 +388,21 @@ const PRODUCTS = [
   },
   {
     name: "Tai nghe SteelSeries Arctis Nova 7", brand: "SteelSeries", cat: "phu-kien-gaming",
-    basePrice: 3200000, salePrice: 4290000, saleDiscount: 14, stock: 26, sold: 71, img: PIC.gear3,
+    basePrice: 3200000, salePrice: 4290000, saleDiscount: 14, stock: 26, sold: 71, img: PIC.headset,
     description: "Arctis Nova 7 kết nối song song 2.4GHz và Bluetooth, vừa nghe game vừa nghe điện thoại, pin 38 giờ và mic khử ồn AI.",
     specs: { other: "Không dây 2.4GHz + Bluetooth · Driver 40mm · Pin 38 giờ · Mic ClearCast Gen 2" },
     tags: ["tai-nghe", "steelseries", "khong-day"],
   },
   {
     name: "Ghế công thái học Sihoo Doro C300", brand: "Sihoo", cat: "phu-kien-gaming",
-    basePrice: 4500000, salePrice: 6490000, saleDiscount: 20, stock: 12, sold: 34, img: PIC.gear4,
+    basePrice: 4500000, salePrice: 6490000, saleDiscount: 20, stock: 12, sold: 34, img: PIC.chair,
     description: "Sihoo Doro C300 lưng lưới tự điều chỉnh theo cột sống, tay vịn 4D, ngồi làm 8 tiếng vẫn không mỏi lưng.",
     specs: { other: "Lưng lưới tự thích ứng · Tay vịn 4D · Ngả 128 độ · Tải trọng 150kg" },
     tags: ["ghe", "sihoo", "cong-thai-hoc"],
   },
   {
     name: "Lót chuột Razer Gigantus V2 XXL", brand: "Razer", cat: "phu-kien-gaming",
-    basePrice: 380000, salePrice: 590000, saleDiscount: 20, stock: 80, sold: 210, img: PIC.gear2,
+    basePrice: 380000, salePrice: 590000, saleDiscount: 20, stock: 80, sold: 210, img: PIC.deskmat,
     description: "Lót chuột cỡ XXL 940x410mm trải kín bàn, bề mặt vải dệt mịn và đế cao su chống trượt.",
     specs: { other: "940 x 410 x 4mm · Bề mặt vải micro-weave · Đế cao su chống trượt" },
     tags: ["lot-chuot", "razer", "gia-re"],
