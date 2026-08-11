@@ -6,6 +6,16 @@ export function AppleLogo({ size = 24 }) {
   );
 }
 
+export function StoreLogo({ size = 24 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="12" rx="1.5" />
+      <path d="M2 19h20" />
+      <path d="M9 8h6" />
+    </svg>
+  );
+}
+
 export function ShieldIcon({ size = 32 }) {
   return (
     <svg

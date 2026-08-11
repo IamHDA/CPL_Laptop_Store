@@ -4,7 +4,7 @@ import { getDisplayPrice } from "../../lib/pricing";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ImageWithFallback } from "../ImageWithFallback";
-import { AppleLogo } from "../icons";
+import { StoreLogo } from "../icons";
 
 function formatCurrency(amount) {
   return new Intl.NumberFormat("vi-VN", {
@@ -92,7 +92,7 @@ function CategorySection({ category }) {
         className="mb-6 flex items-center justify-center gap-1 text-[#1d1d1f]"
       >
         <div className="flex-shrink-0 flex items-center justify-center" style={{ paddingBottom: "4px" }}>
-          <AppleLogo size={26} />
+          <StoreLogo size={26} />
         </div>
         <h2 className="font-semibold tracking-tight" style={{ fontSize: "28px", lineHeight: 1 }}>
           {category.name}

@@ -7,7 +7,7 @@ import axiosClient, { API_URL } from "../lib/api";
 import { getCart } from "../lib/cart";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { AppleLogo } from "../components/icons";
+import { StoreLogo } from "../components/icons";
 
 const SF_FONT =
   "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif";
@@ -137,7 +137,7 @@ export default function LoginPage() {
               {/* Logo + heading */}
               <div className="flex flex-col items-center mb-7">
                 <div className="mb-3 text-[#1d1d1f]">
-                  <AppleLogo size={36} />
+                  <StoreLogo size={36} />
                 </div>
                 <h1
                   className="text-[#1d1d1f] tracking-tight"
