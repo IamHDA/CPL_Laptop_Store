@@ -311,10 +311,20 @@ exports.getFlashSales = async (req, res, next) => {
       startsAt: { $lte: now },
       endsAt: { $gt: now },
     })
-      .populate("products.productId", "name basePrice salePrice images slug")
+      .populate("products.productId", "name basePrice salePrice images slug isActive deletedAt")
       .sort({ endsAt: 1 });
 
-    return res.status(200).json({ success: true, data: flashSales });
+    const visibleFlashSales = flashSales
+      .map((flashSale) => {
+        const data = flashSale.toObject();
+        data.products = data.products.filter(
+          (item) => item.productId && item.productId.isActive !== false && !item.productId.deletedAt
+        );
+        return data;
+      })
+      .filter((flashSale) => flashSale.products.length > 0);
+
+    return res.status(200).json({ success: true, data: visibleFlashSales });
   } catch (err) {
     next(err);
   }

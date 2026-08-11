@@ -191,7 +191,9 @@ export default function FlashSale() {
           const now = new Date();
 
           // Chỉ lấy flash sale chưa hết hạn để tính countdown
-          const futureSales = data.filter((f) => new Date(f.endsAt) > now);
+          const futureSales = data.filter(
+            (f) => f.isActive !== false && new Date(f.startsAt) <= now && new Date(f.endsAt) > now
+          );
           const soonest = futureSales.reduce((min, f) =>
             !min || new Date(f.endsAt) < new Date(min) ? f.endsAt : min, null
           );
@@ -199,7 +201,7 @@ export default function FlashSale() {
             !min || new Date(f.startsAt) < new Date(min) ? f.startsAt : min, null
           );
 
-          data.forEach((flashSale) => {
+          futureSales.forEach((flashSale) => {
             flashSale.products?.forEach((item) => {
               if (item.productId) {
                 flatProducts.push({
@@ -215,8 +217,12 @@ export default function FlashSale() {
           });
 
           setProducts(flatProducts);
-          if (soonest) setEndsAt(new Date(soonest));
-          if (soonestStart) setStartsAt(new Date(soonestStart));
+          setEndsAt(soonest ? new Date(soonest) : null);
+          setStartsAt(soonestStart ? new Date(soonestStart) : null);
+        } else {
+          setProducts([]);
+          setEndsAt(null);
+          setStartsAt(null);
         }
       })
       .catch((err) => {
