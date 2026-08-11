@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { label: "VGA", to: "/categories/vga-card-do-hoa" },
   { label: "CPU", to: "/categories/cpu-bo-vi-xu-ly" },
   { label: "RAM & SSD", to: "/categories/ram-ssd" },
+  { label: "So sánh", to: "/compare" },
 ];
 
 /* ─── Shared state helpers ───────────────────────────────────────── */
