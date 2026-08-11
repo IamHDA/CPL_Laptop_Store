@@ -5,6 +5,14 @@ import { ImageWithFallback } from "../ImageWithFallback";
 import { fadeInUp, staggerContainer, staggerItem } from "../../lib/animations";
 import { fetchAPI } from "../../lib/api";
 
+const CATEGORY_IMAGES = {
+  "laptop-gaming": "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500&auto=format&fit=crop",
+  "laptop-van-phong": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&auto=format&fit=crop",
+  "vga-card-do-hoa": "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=500&auto=format&fit=crop",
+  "cpu-bo-vi-xu-ly": "https://images.unsplash.com/photo-1555617778-02518510b9fa?w=500&auto=format&fit=crop",
+  "ram-ssd": "https://images.unsplash.com/photo-1562976540-1502c2145186?w=500&auto=format&fit=crop",
+};
+
 export default function Categories() {
   const [categories, setCategories] = useState([]);
 
@@ -43,7 +51,7 @@ export default function Categories() {
               >
                 <div className="flex-1 flex items-center justify-center p-2 pt-4 relative">
                   <ImageWithFallback
-                    src={item.imageUrl}
+                    src={item.imageUrl || CATEGORY_IMAGES[item.slug]}
                     alt={item.name}
                     className="max-h-[140px] w-auto object-contain group-hover:scale-105 transition-transform duration-500 ease-out"
                   />

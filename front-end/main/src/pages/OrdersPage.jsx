@@ -13,6 +13,7 @@ import { formatCurrency } from "../lib/format";
 
 const SF_FONT =
   "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif";
+const RETURNS_FEATURE_ENABLED = false;
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString("vi-VN", {
@@ -507,7 +508,7 @@ function OrderCard({ order, onCancel, onReturn }) {
                   </button>
                 </div>
               )}
-              {order.status === "delivered" && !order._returnRequested && (
+              {order.status === "delivered" && (
                 <div className="mt-3 flex gap-2 flex-wrap">
                   {order.items && order.items.length > 0 ? (
                     <Link
@@ -528,13 +529,13 @@ function OrderCard({ order, onCancel, onReturn }) {
                   <button
                     type="button"
                     onClick={() => setShowReturn(true)}
-                    className="rounded-full border border-[#8e8e93] px-4 py-2 text-sm font-medium text-[#3a3a3c] transition-all hover:bg-[#f5f5f7]"
+                    className={`${RETURNS_FEATURE_ENABLED && !order._returnRequested ? "" : "hidden"} rounded-full border border-[#8e8e93] px-4 py-2 text-sm font-medium text-[#3a3a3c] transition-all hover:bg-[#f5f5f7]`}
                   >
                     Yêu cầu hoàn hàng
                   </button>
                 </div>
               )}
-              {order._returnRequested && (
+              {RETURNS_FEATURE_ENABLED && order._returnRequested && (
                 <p className="mt-3 text-[12px] text-[#8e8e93]">Đã gửi yêu cầu hoàn hàng</p>
               )}
 
@@ -545,7 +546,7 @@ function OrderCard({ order, onCancel, onReturn }) {
 
       {/* Modals phải ra ngoài motion.div để fixed positioning không bị vỡ */}
       <AnimatePresence>
-        {showReturn && (
+        {RETURNS_FEATURE_ENABLED && showReturn && (
           <ReturnModal
             orderId={order._id}
             paymentMethod={order.paymentMethod}

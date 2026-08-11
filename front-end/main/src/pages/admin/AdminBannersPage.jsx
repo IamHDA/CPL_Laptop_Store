@@ -4,12 +4,11 @@ import axiosClient from "../../lib/api";
 
 const POSITIONS = [
   { value: "homepage",    label: "Trang chủ" },
-  { value: "iphone",     label: "iPhone" },
-  { value: "ipad",       label: "iPad" },
-  { value: "mac",        label: "Mac" },
-  { value: "watch",      label: "Watch" },
-  { value: "audio",      label: "Audio" },
-  { value: "accessories",label: "Accessories" },
+  { value: "laptop-gaming",    label: "Laptop Gaming" },
+  { value: "laptop-van-phong", label: "Laptop Văn Phòng" },
+  { value: "vga-card-do-hoa",  label: "VGA - Card Đồ Họa" },
+  { value: "cpu-bo-vi-xu-ly",  label: "CPU - Bộ Vi Xử Lý" },
+  { value: "ram-ssd",          label: "RAM & Ổ Cứng SSD" },
 ];
 
 /* ─── Toggle ─────────────────────────────────────────────────────── */
@@ -115,7 +114,7 @@ function BannerModal({ banner, onClose, onSave }) {
           {/* Tiêu đề */}
           <div>
             <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">Tiêu đề *</label>
-            <input value={form.title} onChange={set("title")} placeholder="iPhone 17 Pro Max - Titanium" className={inputCls("title")} />
+            <input value={form.title} onChange={set("title")} placeholder="Laptop Gaming - Ưu đãi lớn" className={inputCls("title")} />
             {errors.title && <p className="mt-1 text-[11px] text-[#e53e3e]">{errors.title}</p>}
           </div>
 
@@ -135,7 +134,7 @@ function BannerModal({ banner, onClose, onSave }) {
           {/* Link URL */}
           <div>
             <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">Link khi click (tuỳ chọn)</label>
-            <input value={form.linkUrl} onChange={set("linkUrl")} placeholder="/categories/iphone" className={inputCls("linkUrl")} />
+            <input value={form.linkUrl} onChange={set("linkUrl")} placeholder="/categories/laptop-gaming" className={inputCls("linkUrl")} />
           </div>
 
           {/* Vị trí */}
