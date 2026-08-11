@@ -13,6 +13,7 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminCategoriesPage from "./pages/admin/AdminCategoriesPage";
 import AdminProductsPage from "./pages/admin/AdminProductsPage.jsx";
 import AdminOrdersPage from "./pages/admin/AdminOrdersPage.jsx";
+import AdminReviewsPage from "./pages/admin/AdminReviewsPage.jsx";
 import AdminUsersPage from "./pages/admin/AdminUsersPage.jsx";
 import AdminVouchersPage from "./pages/admin/AdminVouchersPage.jsx";
 import AdminFlashSalesPage from "./pages/admin/AdminFlashSalesPage.jsx";
@@ -24,6 +25,7 @@ import AdminHomepageSettingsPage from "./pages/admin/AdminHomepageSettingsPage.j
 import HomePage from "./pages/HomePage.jsx";
 import ProductsPage from "./pages/ProductsPage.jsx";
 import ProductDetailPage from "./pages/ProductDetailPage.jsx";
+import ComparePage from "./pages/ComparePage.jsx";
 import CategoryPage from "./pages/CategoryPage.jsx";
 import SearchPage from "./pages/SearchPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
@@ -85,6 +87,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/products/:id" element={<ProductDetailPage />} />
+        <Route path="/compare" element={<ComparePage />} />
         <Route path="/categories/:slug" element={<CategoryPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/cart" element={<CartPage />} />
@@ -141,6 +144,7 @@ export default function App() {
           <Route path="products" element={<AdminProductsPage />} />
           <Route path="categories" element={<AdminCategoriesPage />} />
           <Route path="orders" element={<AdminOrdersPage />} />
+          <Route path="reviews" element={<AdminReviewsPage />} />
           <Route path="users" element={<AdminUsersPage />} />
           <Route path="flash-sales" element={<AdminFlashSalesPage />} />
           <Route path="vouchers" element={<AdminVouchersPage />} />
