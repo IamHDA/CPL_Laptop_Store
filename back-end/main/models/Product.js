@@ -7,7 +7,9 @@ const productSchema = new mongoose.Schema(
       required: true,
       trim: true,
       maxlength: 200,
-      index: "text",
+      // Không khai báo index: "text" ở đây — MongoDB chỉ cho một text index mỗi
+      // collection, khai báo inline sẽ chiếm chỗ và làm text index tổng hợp ở
+      // cuối file không bao giờ được tạo (search chỉ khớp mỗi name).
     },
     slug: {
       type: String,
@@ -39,6 +41,7 @@ const productSchema = new mongoose.Schema(
       screen: { type: String, default: "" },
       mainboard: { type: String, default: "" },
       psu: { type: String, default: "" },
+      other: { type: String, default: "" }, // thông số không thuộc nhóm trên (phụ kiện, ghế, lót chuột...)
     },
 
     // ─── Giá ──────────────────────────────────────────────────────────────────

@@ -503,6 +503,15 @@ export default function ProductDetailPage() {
                     {product.specifications.screen && (
                       <div className="flex justify-between py-2"><span className="text-[#6e6e73]">Màn hình</span><span className="font-medium text-[#1d1d1f]">{product.specifications.screen}</span></div>
                     )}
+                    {product.specifications.mainboard && (
+                      <div className="flex justify-between py-2"><span className="text-[#6e6e73]">Mainboard</span><span className="font-medium text-[#1d1d1f]">{product.specifications.mainboard}</span></div>
+                    )}
+                    {product.specifications.psu && (
+                      <div className="flex justify-between py-2"><span className="text-[#6e6e73]">Nguồn</span><span className="font-medium text-[#1d1d1f]">{product.specifications.psu}</span></div>
+                    )}
+                    {product.specifications.other && (
+                      <div className="flex justify-between gap-6 py-2"><span className="shrink-0 text-[#6e6e73]">Thông số khác</span><span className="text-right font-medium text-[#1d1d1f]">{product.specifications.other}</span></div>
+                    )}
                   </div>
                 </div>
               )}

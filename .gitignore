@@ -1,16 +1,14 @@
 # Secrets
 back-end/main/.env
-front-end/haha/.env
-front-end/haha/.env.local
+front-end/main/.env
+front-end/main/.env.local
 
 # Dependencies
 node_modules/
-back-end/main/node_modules/
-front-end/haha/node_modules/
 
 # Build output
-front-end/haha/dist/
-front-end/haha/.vite/
+front-end/main/dist/
+front-end/main/.vite/
 
 # Logs
 *.log

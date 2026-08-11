@@ -1,17 +1,7 @@
 const Category = require("../models/Category");
 const Product  = require("../models/Product");
 
-// TODO: Cài slugify: npm install slugify
-// const slugify = require("slugify");
-// Tạm dùng hàm đơn giản cho đến khi cài package
-const slugify = (str) =>
-  str
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-");
+const slugify = require("../lib/slugify");
 
 // ─── 6.1 Get All ──────────────────────────────────────────────────────────────
 // GET /api/categories

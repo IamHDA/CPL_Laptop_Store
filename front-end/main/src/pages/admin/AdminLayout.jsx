@@ -87,21 +87,21 @@ const NAV = [
     ),
   },
   {
+    to: "/admin/return-requests",
+    label: "Yêu cầu trả hàng",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <polyline points="9 14 4 9 9 4" /><path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+      </svg>
+    ),
+  },
+  {
     to: "/admin/banners",
     label: "Banners",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <rect x="2" y="5" width="20" height="14" rx="2" />
         <path d="M2 10h20" />
-      </svg>
-    ),
-  },
-  {
-    to: "/admin/homepage-settings",
-    label: "Trang chủ",
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
       </svg>
     ),
   },
@@ -116,8 +116,8 @@ const PAGE_TITLES = {
   "/admin/categories":   "Quản lý danh mục",
   "/admin/vouchers":     "Quản lý Voucher",
   "/admin/flash-sales":  "Quản lý Flash Sale",
+  "/admin/return-requests": "Yêu cầu trả hàng",
   "/admin/banners":      "Quản lý Banner",
-  "/admin/homepage-settings": "Bố cục trang chủ",
 };
 
 export default function AdminLayout() {

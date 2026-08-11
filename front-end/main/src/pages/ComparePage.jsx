@@ -24,6 +24,7 @@ const SPEC_ROWS = [
   { key: "screen", label: "Màn hình", get: (p) => p.specifications?.screen },
   { key: "mainboard", label: "Mainboard", get: (p) => p.specifications?.mainboard },
   { key: "psu", label: "Nguồn", get: (p) => p.specifications?.psu },
+  { key: "other", label: "Thông số khác", get: (p) => p.specifications?.other },
 ];
 
 function ProductOption({ product, checked, disabled, onToggle }) {
@@ -70,6 +71,11 @@ function CompareTable({ products }) {
     );
   }
 
+  // Chỉ giữ dòng có ít nhất một sản phẩm điền dữ liệu. So sánh ba con chuột mà vẫn
+  // hiện CPU/VGA/Mainboard rồi ghi "Đang cập nhật" ở mọi ô là nhiễu, không phải
+  // thiếu dữ liệu — phụ kiện vốn không có mấy thông số đó.
+  const rows = SPEC_ROWS.filter((row) => products.some((p) => row.get(p)));
+
   return (
     <div className="overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
       <div className="overflow-x-auto">
@@ -99,7 +105,7 @@ function CompareTable({ products }) {
             </tr>
           </thead>
           <tbody>
-            {SPEC_ROWS.map((row) => (
+            {rows.map((row) => (
               <tr key={row.key} className="border-b border-black/[0.04] last:border-b-0">
                 <td className="bg-[#fafafa] px-4 py-3 text-[13px] font-semibold text-[#1d1d1f]">{row.label}</td>
                 {products.map((product) => (
@@ -125,6 +131,9 @@ export default function ComparePage() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [comparing, setComparing] = useState(false);
+  // Bảng kết quả là một màn riêng, không nằm dưới lưới 42 sản phẩm — trước đó
+  // phải cuộn qua hết lưới mới thấy bảng.
+  const [showResult, setShowResult] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -157,6 +166,11 @@ export default function ComparePage() {
       })
       .catch((err) => toast.error(err.message || "Không thể so sánh sản phẩm"))
       .finally(() => setComparing(false));
+  }, [selectedIds]);
+
+  // Bỏ chọn còn dưới 2 sản phẩm thì không còn gì để so sánh, quay lại bộ chọn
+  useEffect(() => {
+    if (selectedIds.length < 2) setShowResult(false);
   }, [selectedIds]);
 
   const filteredProducts = useMemo(() => {
@@ -196,17 +210,54 @@ export default function ComparePage() {
     <div className="min-h-screen bg-white text-[#1d1d1f] antialiased" style={{ fontFamily: SF_FONT }}>
       <Header />
 
-      <main className="bg-[#fafafa] pb-16">
+      <main className={`bg-[#fafafa] ${showResult ? "pb-16" : "pb-32"}`}>
         <section className="border-b border-black/[0.06] bg-white">
           <div className="mx-auto max-w-[1200px] px-6 py-4 md:px-8">
             <p className="text-sm text-[#6e6e73]">
               <Link to="/" className="hover:text-[#1d1d1f]">Home</Link>
               {" / "}
-              <span className="text-[#1d1d1f]">So sánh sản phẩm</span>
+              {showResult ? (
+                <>
+                  <button type="button" onClick={() => setShowResult(false)} className="hover:text-[#1d1d1f]">
+                    So sánh sản phẩm
+                  </button>
+                  {" / "}
+                  <span className="text-[#1d1d1f]">Kết quả</span>
+                </>
+              ) : (
+                <span className="text-[#1d1d1f]">So sánh sản phẩm</span>
+              )}
             </p>
           </div>
         </section>
 
+        {showResult ? (
+          <section className="mx-auto max-w-[1200px] px-4 py-8 md:px-8">
+            <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <h1 className="text-[26px] font-semibold text-[#1d1d1f]">Kết quả so sánh</h1>
+                <p className="mt-1 text-sm text-[#6e6e73]">
+                  {compareProducts.length} sản phẩm · chỉ hiện những thông số có dữ liệu.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowResult(false)}
+                className="w-fit rounded-full border border-black/[0.1] bg-white px-5 py-2.5 text-sm font-medium text-[#1d1d1f] transition-colors hover:bg-[#f5f5f7]"
+              >
+                ← Chọn sản phẩm khác
+              </button>
+            </div>
+
+            {comparing ? (
+              <div className="flex justify-center rounded-2xl bg-white py-12">
+                <div className="h-7 w-7 animate-spin rounded-full border-2 border-[#1d1d1f] border-t-transparent" />
+              </div>
+            ) : (
+              <CompareTable products={compareProducts} />
+            )}
+          </section>
+        ) : (
         <section className="mx-auto max-w-[1200px] px-4 py-8 md:px-8">
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
@@ -277,15 +328,38 @@ export default function ComparePage() {
             </div>
           </div>
 
-          {comparing ? (
-            <div className="flex justify-center rounded-2xl bg-white py-12">
-              <div className="h-7 w-7 animate-spin rounded-full border-2 border-[#1d1d1f] border-t-transparent" />
-            </div>
-          ) : (
-            <CompareTable products={compareProducts} />
-          )}
         </section>
+        )}
       </main>
+
+      {/* Thanh cố định: nút So sánh luôn trong tầm mắt, không phải cuộn hết lưới sản phẩm */}
+      {!showResult && selectedIds.length > 0 && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-black/[0.08] bg-white/95 backdrop-blur-sm">
+          <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-4 px-4 py-3 md:px-8">
+            <p className="text-sm text-[#3a3a3c]">
+              Đã chọn <span className="font-semibold text-[#1d1d1f]">{selectedIds.length}</span>/3 sản phẩm
+              {selectedIds.length < 2 && <span className="text-[#8e8e93]"> · cần ít nhất 2</span>}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSelectedIds([])}
+                className="rounded-full border border-black/[0.1] px-4 py-2.5 text-sm font-medium text-[#3a3a3c] transition-colors hover:bg-[#f5f5f7]"
+              >
+                Bỏ chọn
+              </button>
+              <button
+                type="button"
+                disabled={selectedIds.length < 2}
+                onClick={() => setShowResult(true)}
+                className="rounded-full bg-[#1d1d1f] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#3d3d3f] disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                So sánh
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

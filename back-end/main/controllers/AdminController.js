@@ -560,8 +560,10 @@ exports.banUser = require("./UserController").banUser;
 
 exports.getBanners = async (req, res, next) => {
   try {
+    const isAdminRequest = req.baseUrl?.includes("/api/admin");
     const filter = { deletedAt: null };
     if (req.query.position) filter.position = req.query.position;
+    if (!isAdminRequest) filter.isActive = true;
     const banners = await Banner.find(filter).sort({ sortOrder: 1 });
     return res.status(200).json({ success: true, data: banners });
   } catch (err) { next(err); }
@@ -569,11 +571,18 @@ exports.getBanners = async (req, res, next) => {
 
 exports.createBanner = async (req, res, next) => {
   try {
-    const { title, imageUrl, linkUrl, sortOrder } = req.body;
+    const { title, imageUrl, linkUrl, position, sortOrder, isActive } = req.body;
     if (!title || !imageUrl) {
       return res.status(400).json({ success: false, message: "title và imageUrl là bắt buộc." });
     }
-    const banner = await Banner.create({ title, imageUrl, linkUrl: linkUrl || "", sortOrder: sortOrder ?? 0 });
+    const banner = await Banner.create({
+      title,
+      imageUrl,
+      linkUrl: linkUrl || "",
+      position: position || "homepage",
+      sortOrder: sortOrder ?? 0,
+      isActive: isActive !== false,
+    });
     return res.status(201).json({ success: true, message: "Tạo banner thành công.", data: banner });
   } catch (err) { next(err); }
 };

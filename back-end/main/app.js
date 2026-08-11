@@ -49,10 +49,17 @@ app.use(
   }),
 );
 
-const ALLOWED_ORIGINS =
-  process.env.NODE_ENV === "production"
-    ? [process.env.CLIENT_URL].filter(Boolean)
-    : ["http://localhost:5174"];
+// CLIENT_URL nhận nhiều origin cách nhau bởi dấu phẩy: Vercel cấp cho front-end
+// vài hostname (…-omega, …-git-main-…, domain riêng) và chỉ khai báo một cái thì
+// những cái còn lại bị CORS chặn.
+const ALLOWED_ORIGINS = (process.env.CLIENT_URL || "")
+  .split(",")
+  .map((o) => o.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+
+if (process.env.NODE_ENV !== "production") {
+  ALLOWED_ORIGINS.push("http://localhost:5174", "http://127.0.0.1:5174");
+}
 
 app.use(
   cors({
@@ -101,8 +108,9 @@ const chatLimit = rateLimit({
   },
 });
 
-// Kết nối MongoDB
-connectDB();
+// Kết nối MongoDB — không await ở đây, mongoose tự buffer query cho tới khi kết nối
+// xong. Bắt lỗi để một lần connect hỏng không thành unhandled rejection giết cả lambda.
+connectDB().catch((err) => console.error("[DB] Không kết nối được MongoDB:", err.message));
 
 // ── No-store cho API nhạy cảm (route handler có thể override bằng res.set) ─────
 app.use("/api", (req, res, next) => {
@@ -133,6 +141,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/shipping", shippingRoutes);
 app.use("/api/images", imageRoutes);
 app.use("/api/banners", bannerRoutes);
+app.use("/api/home-slides", bannerRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/chat", chatLimit, chatRoutes);
 
@@ -149,8 +158,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Khởi chạy server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Chỉ mở cổng khi chạy trực tiếp (`node app.js` / `npm run dev`).
+// Trên Vercel, app được api/index.js export ra làm serverless handler — gọi
+// listen() ở đó vừa vô nghĩa vừa làm function treo cho tới khi hết timeout.
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

@@ -2,177 +2,46 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const Banner = require("./models/Banner");
 
+// Ảnh khổ ngang 1600x500 — cùng bộ ảnh Unsplash với seed.js, chỉ đổi tham số crop
+const WIDE = (id) => `https://images.unsplash.com/${id}?w=1600&h=500&fit=crop&q=80`;
+
 const banners = [
-  // ── Homepage ──
-  {
-    title: "Tháng Tự Hào - Trao Ngàn Ưu Đãi",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner-thang-4/homepage/first-pc.png",
-    linkUrl: "",
-    position: "homepage",
-    sortOrder: 1,
-    isActive: true,
-  },
-  {
-    title: "iPhone 17 Pro Max - Titan Tự Nhiên",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner-thang-4/homepage/banner%20iP17promax_PC.png",
-    linkUrl: "/categories/iphone",
-    position: "homepage",
-    sortOrder: 2,
-    isActive: true,
-  },
-  {
-    title: "MacBook Pro - Sức mạnh vượt trội",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner-thang-4/homepage/banner%20Macbook%20pro_PC.png",
-    linkUrl: "/categories/mac",
-    position: "homepage",
-    sortOrder: 3,
-    isActive: true,
-  },
-  {
-    title: "iPad Air - Sáng tạo không giới hạn",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner-thang-4/homepage/banner%20iPadAir_PC.png",
-    linkUrl: "/categories/ipad",
-    position: "homepage",
-    sortOrder: 4,
-    isActive: true,
-  },
-  {
-    title: "Apple Watch Series 11 - Sức khỏe thông minh",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner-thang-4/homepage/banner%20watch11_PC.png",
-    linkUrl: "/categories/watch",
-    position: "homepage",
-    sortOrder: 5,
-    isActive: true,
-  },
-  {
-    title: "AirPods Pro 3 - Âm thanh không gian",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner-thang-4/homepage/banner%20AirPodpro3_PC.png",
-    linkUrl: "/categories/audio",
-    position: "homepage",
-    sortOrder: 6,
-    isActive: true,
-  },
+  // ── Trang chủ (carousel) ────────────────────────────────────────────────────
+  { title: "Laptop Gaming RTX 40 Series - Giảm đến 18%", imageUrl: WIDE("photo-1603302576837-37561b2e2302"), linkUrl: "/categories/laptop-gaming",      position: "homepage", sortOrder: 1 },
+  { title: "Back To School - Laptop Sinh Viên Từ 14 Triệu", imageUrl: WIDE("photo-1517336714731-489689fd1ca8"), linkUrl: "/categories/laptop-van-phong", position: "homepage", sortOrder: 2 },
+  { title: "Workstation Đồ Họa - Trả Góp 0%",            imageUrl: WIDE("photo-1527443224154-c4a3942d3acf"), linkUrl: "/categories/laptop-do-hoa",     position: "homepage", sortOrder: 3 },
+  { title: "Nâng Cấp SSD & RAM - Giá Chỉ Từ 990K",       imageUrl: WIDE("photo-1597872200969-2b65d56bd16b"), linkUrl: "/categories/ram-o-cung-ssd",    position: "homepage", sortOrder: 4 },
+  { title: "Màn Hình Gaming 180Hz - Ưu Đãi Cuối Tuần",   imageUrl: WIDE("photo-1527814050087-3793815479db"), linkUrl: "/categories/man-hinh-may-tinh",  position: "homepage", sortOrder: 5 },
+  { title: "Setup Gaming Trọn Bộ - Tặng Lót Chuột XXL",  imageUrl: WIDE("photo-1618384887929-16ec33fab9ef"), linkUrl: "/categories/phu-kien-gaming",   position: "homepage", sortOrder: 6 },
 
-  // ── iPhone ──
-  {
-    title: "iPhone 17 Pro Max - Chip A19 Pro",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner-thang-4/homepage/banner%20iP17promax_PC.png",
-    linkUrl: "",
-    position: "iphone",
-    sortOrder: 1,
-    isActive: true,
-  },
-  {
-    title: "iPhone Air - Siêu mỏng, siêu nhẹ",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner/banner-iphone-air-pc.jpg",
-    linkUrl: "",
-    position: "iphone",
-    sortOrder: 2,
-    isActive: true,
-  },
-
-  // ── iPad ──
-  {
-    title: "iPad Pro M5 - Màn hình OLED tuyệt đỉnh",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner/banner-ipad-pro-m5-pc.jpg",
-    linkUrl: "",
-    position: "ipad",
-    sortOrder: 1,
-    isActive: true,
-  },
-  {
-    title: "iPad Air M4 - Sáng tạo không giới hạn",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner/banner-ipad-air-m4-pc.jpg",
-    linkUrl: "",
-    position: "ipad",
-    sortOrder: 2,
-    isActive: true,
-  },
-
-  // ── Mac ──
-  {
-    title: "MacBook Air M4 - Hiệu năng bứt phá",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner%20macbook%20air%20m4_PC.jpg",
-    linkUrl: "",
-    position: "mac",
-    sortOrder: 1,
-    isActive: true,
-  },
-  {
-    title: "MacBook Pro M5 - Sức mạnh chuyên nghiệp",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner/banner-macbook-pro-m5-pc.jpg",
-    linkUrl: "",
-    position: "mac",
-    sortOrder: 2,
-    isActive: true,
-  },
-
-  // ── Watch ──
-  {
-    title: "Apple Watch Series 11 - Sức khỏe thông minh",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner/banner-watch-series-11-pc.jpg",
-    linkUrl: "",
-    position: "watch",
-    sortOrder: 1,
-    isActive: true,
-  },
-  {
-    title: "Apple Watch Ultra 3 - Đỉnh cao bền bỉ",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner/banner-watch-ultra-3-pc.jpg",
-    linkUrl: "",
-    position: "watch",
-    sortOrder: 2,
-    isActive: true,
-  },
-
-  // ── Audio ──
-  {
-    title: "AirPods Pro 3 - Chống ồn thế hệ mới",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner/airpods-pro-2-banner-pc.jpg",
-    linkUrl: "",
-    position: "audio",
-    sortOrder: 1,
-    isActive: true,
-  },
-  {
-    title: "AirPods 4 - Trải nghiệm âm thanh mới",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner/banner-airpods-4-pc.jpg",
-    linkUrl: "",
-    position: "audio",
-    sortOrder: 2,
-    isActive: true,
-  },
-
-  // ── Accessories ──
-  {
-    title: "Apple Pencil Pro - Sáng tạo đỉnh cao",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner/banner-apple-pencil-pro-pc.jpg",
-    linkUrl: "",
-    position: "accessories",
-    sortOrder: 1,
-    isActive: true,
-  },
-  {
-    title: "AirTag - Không bao giờ mất đồ",
-    imageUrl: "https://shopdunk.com/images/uploaded/banner/banner-airtag-pc.jpg",
-    linkUrl: "",
-    position: "accessories",
-    sortOrder: 2,
-    isActive: true,
-  },
+  // ── Banner từng danh mục ────────────────────────────────────────────────────
+  { title: "ROG · Legion · Predator - Bảo hành 24 tháng", imageUrl: WIDE("photo-1615663245857-ac93bb7c39e7"), position: "laptop-gaming",     sortOrder: 1 },
+  { title: "Laptop Gaming Dưới 25 Triệu",                 imageUrl: WIDE("photo-1591488320449-011701bb6704"), position: "laptop-gaming",     sortOrder: 2 },
+  { title: "Ultrabook Mỏng Nhẹ Dưới 1.3kg",               imageUrl: WIDE("photo-1541807084-5c52b6b3adef"), position: "laptop-van-phong",  sortOrder: 1 },
+  { title: "ThinkPad · XPS · Zenbook Chính Hãng",          imageUrl: WIDE("photo-1496181133206-80ce9b88a853"), position: "laptop-van-phong",  sortOrder: 2 },
+  { title: "Màn Hình Chuẩn Màu 100% DCI-P3",              imageUrl: WIDE("photo-1593642632823-8f785ba67e45"), position: "laptop-do-hoa",     sortOrder: 1 },
+  { title: "VGA RTX 40 SUPER - Hàng Chính Hãng",          imageUrl: WIDE("photo-1587202372775-e229f172b9d7"), position: "vga-card-do-hoa",   sortOrder: 1 },
+  { title: "Intel Core & AMD Ryzen Thế Hệ Mới",           imageUrl: WIDE("photo-1555680202-c86f0e12f086"), position: "cpu-bo-vi-xu-ly",   sortOrder: 1 },
+  { title: "SSD NVMe Gen4 - Đọc Tới 7450MB/s",            imageUrl: WIDE("photo-1625842268584-8f3296236761"), position: "ram-o-cung-ssd",    sortOrder: 1 },
+  { title: "Màn Hình Ultrawide 49 inch",                  imageUrl: WIDE("photo-1593305841991-05c297ba4575"), position: "man-hinh-may-tinh", sortOrder: 1 },
+  { title: "Bàn Phím Cơ Hot-swap - Bảo Hành 12 Tháng",    imageUrl: WIDE("photo-1547082299-de196ea013d6"), position: "phu-kien-gaming",   sortOrder: 1 },
 ];
 
 async function main() {
-  await mongoose.connect(process.env.MONGO_URI);
-  console.log("✅ Connected");
+  await mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/ecommerce");
+  console.log("✅ Đã kết nối MongoDB");
 
   await Banner.deleteMany({});
-  console.log("🗑️  Cleared existing banners");
-
-  await Banner.insertMany(banners);
-  console.log(`✅ Seeded ${banners.length} banners`);
+  await Banner.insertMany(banners.map((b) => ({ linkUrl: "", isActive: true, ...b })));
+  console.log(`🖼️  Đã tạo ${banners.length} banner`);
 
   await mongoose.disconnect();
 }
 
-main().catch(console.error);
+if (require.main === module) main().catch(async (err) => {
+  console.error("❌ Lỗi khi seed banner:", err);
+  await mongoose.disconnect().catch(() => {});
+  process.exit(1);
+});
+
+module.exports = { banners };
