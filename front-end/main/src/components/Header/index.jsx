@@ -20,6 +20,20 @@ import axiosClient from "../../lib/api";
 // trang trống không sản phẩm, không banner.
 const STATIC_NAV = [{ label: "So sánh", to: "/compare" }];
 
+// Tên danh mục đầy đủ quá dài cho thanh nav ngang. Map này chỉ rút gọn nhãn và
+// luôn có fallback về tên thật, nên danh mục mới thêm vẫn hiện đúng — khác với
+// danh sách hardcode cũ, thiếu một mục là mục đó biến mất khỏi menu.
+const SHORT_LABEL = {
+  "laptop-gaming": "Gaming",
+  "laptop-van-phong": "Văn Phòng",
+  "laptop-do-hoa": "Đồ Họa",
+  "vga-card-do-hoa": "VGA",
+  "cpu-bo-vi-xu-ly": "CPU",
+  "ram-o-cung-ssd": "RAM & SSD",
+  "man-hinh-may-tinh": "Màn Hình",
+  "phu-kien-gaming": "Phụ Kiện",
+};
+
 function useNavItems() {
   const [items, setItems] = useState(STATIC_NAV);
 
@@ -30,7 +44,7 @@ function useNavItems() {
       .then(({ data }) => {
         if (!alive) return;
         const cats = (data.data || []).map((c) => ({
-          label: c.name,
+          label: SHORT_LABEL[c.slug] || c.name,
           to: `/categories/${c.slug}`,
         }));
         setItems([...cats, ...STATIC_NAV]);
@@ -432,14 +446,14 @@ function Navbar({ scrolled, cartCount, isLoggedIn, isAdmin, userInitial }) {
         </Link>
 
         {/* Desktop nav — centered */}
-        <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-8">
+        <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-5 lg:gap-6">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.to === "/"}
               className={({ isActive }) =>
-                `relative py-1 text-[13px] transition-colors ${
+                `relative whitespace-nowrap py-1 text-[13px] transition-colors ${
                   isActive
                     ? "font-semibold text-[#1d1d1f]"
                     : "font-normal text-[#6e6e73] hover:text-[#1d1d1f]"
