@@ -96,15 +96,6 @@ const NAV = [
       </svg>
     ),
   },
-  {
-    to: "/admin/homepage-settings",
-    label: "Trang chủ",
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-      </svg>
-    ),
-  },
 ];
 
 const PAGE_TITLES = {
@@ -117,7 +108,6 @@ const PAGE_TITLES = {
   "/admin/vouchers":     "Quản lý Voucher",
   "/admin/flash-sales":  "Quản lý Flash Sale",
   "/admin/banners":      "Quản lý Banner",
-  "/admin/homepage-settings": "Bố cục trang chủ",
 };
 
 export default function AdminLayout() {

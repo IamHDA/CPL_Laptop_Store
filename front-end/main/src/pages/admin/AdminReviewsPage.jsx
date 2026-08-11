@@ -20,7 +20,36 @@ function Stars({ value }) {
   );
 }
 
-function ReviewRow({ review, onChanged }) {
+function ImagePreviewModal({ image, onClose }) {
+  if (!image) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4"
+      onClick={onClose}
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#1d1d1f] shadow-lg transition-colors hover:bg-[#f5f5f7]"
+        aria-label="Đóng ảnh"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+      <img
+        src={image}
+        alt="Ảnh đánh giá phóng to"
+        className="max-h-[88vh] max-w-[92vw] rounded-xl bg-white object-contain shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      />
+    </div>
+  );
+}
+
+function ReviewRow({ review, onChanged, onPreviewImage }) {
   const [expanded, setExpanded] = useState(false);
   const [reply, setReply] = useState(review.reply || "");
   const [saving, setSaving] = useState(false);
@@ -109,7 +138,26 @@ function ReviewRow({ review, onChanged }) {
                 {review.images?.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-2">
                     {review.images.map((img, index) => (
-                      <img key={index} src={img} alt={`review-${index}`} className="h-16 w-16 rounded-lg object-cover" />
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => onPreviewImage(img)}
+                        className="group relative h-24 w-24 overflow-hidden rounded-xl border border-black/[0.08] bg-white shadow-sm transition-all hover:border-[#0071e3] hover:shadow-md"
+                        title="Click để phóng to"
+                      >
+                        <img
+                          src={img}
+                          alt={`review-${index}`}
+                          className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                        />
+                        <span className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/25 group-hover:opacity-100">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.3">
+                            <circle cx="11" cy="11" r="7" />
+                            <path d="m21 21-4.35-4.35" />
+                            <path d="M11 8v6M8 11h6" />
+                          </svg>
+                        </span>
+                      </button>
                     ))}
                   </div>
                 )}
@@ -143,6 +191,7 @@ function ReviewRow({ review, onChanged }) {
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -159,6 +208,8 @@ export default function AdminReviewsPage() {
 
   return (
     <div className="space-y-5">
+      <ImagePreviewModal image={previewImage} onClose={() => setPreviewImage(null)} />
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-[22px] font-semibold text-[#1d1d1f]">Quản lý đánh giá</h1>
@@ -187,7 +238,12 @@ export default function AdminReviewsPage() {
               </thead>
               <tbody>
                 {reviews.map((review) => (
-                  <ReviewRow key={review._id} review={review} onChanged={load} />
+                  <ReviewRow
+                    key={review._id}
+                    review={review}
+                    onChanged={load}
+                    onPreviewImage={setPreviewImage}
+                  />
                 ))}
               </tbody>
             </table>

@@ -132,9 +132,6 @@ export default function Banner() {
 
       {total > 1 && (
         <>
-          <div className="absolute bottom-3 right-5 z-20 rounded-full bg-white/85 px-3 py-1 text-[12px] font-semibold text-[#1d1d1f] shadow-sm backdrop-blur-sm">
-            {safeCurrent + 1} / {total}
-          </div>
           <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/80 px-2.5 py-1.5 shadow-sm backdrop-blur-sm">
             {slides.map((slide, index) => (
               <button key={slide.id} type="button" onClick={() => go(index)} aria-label={`Slide ${index + 1}`}>
