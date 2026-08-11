@@ -350,10 +350,20 @@ exports.getMyOrders = async (req, res, next) => {
       Order.countDocuments(filter),
     ]);
 
+    // Gắn trạng thái yêu cầu hoàn hàng để giao diện biết đơn nào đã gửi rồi.
+    // Thiếu nó thì khách refresh xong nút "Yêu cầu hoàn hàng" hiện lại, bấm vào
+    // nhận lỗi 409 vì mỗi đơn chỉ được gửi một yêu cầu.
+    const returns = await ReturnRequest.find({ orderId: { $in: orders.map((o) => o._id) } })
+      .select("orderId status");
+    const returnByOrder = new Map(returns.map((r) => [String(r.orderId), r.status]));
+
     return res.status(200).json({
       success: true,
       data: {
-        orders,
+        orders: orders.map((o) => ({
+          ...o.toJSON(),
+          returnStatus: returnByOrder.get(String(o._id)) || null,
+        })),
         pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
       },
     });

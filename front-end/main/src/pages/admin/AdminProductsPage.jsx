@@ -40,6 +40,7 @@ function useProductForm(product) {
     const file = e.target.files?.[0];
     if (file) {
       setImageFile(file);
+      setErrors((er) => ({ ...er, image: undefined }));
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -51,6 +52,9 @@ function useProductForm(product) {
   const validate = () => {
     const e = {};
     if (!form.name.trim()) e.name = "Vui lòng nhập tên sản phẩm";
+    if (!form.brand.trim()) e.brand = "Vui lòng nhập thương hiệu";
+    // Sửa sản phẩm cũ thì imagePreview đã có sẵn ảnh hiện tại, không bắt upload lại
+    if (!imageFile && !imagePreview) e.image = "Vui lòng chọn ảnh sản phẩm";
     if (!form.basePrice || Number(form.basePrice) <= 0) e.basePrice = "Giá nhập phải lớn hơn 0";
     if (form.salePrice && Number(form.salePrice) < Number(form.basePrice)) {
       e.salePrice = "Giá bán không được nhỏ hơn giá nhập";
@@ -169,8 +173,9 @@ function ProductDrawer({ categories, onClose, onSave }) {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">Thương hiệu (Brand)</label>
-                <input name="brand" value={form.brand} onChange={handle} placeholder="ASUS / Dell / MSI" className={inputCls(false)} />
+                <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">Thương hiệu (Brand) *</label>
+                <input name="brand" value={form.brand} onChange={handle} placeholder="ASUS / Dell / MSI" className={inputCls(errors.brand)} />
+                {errors.brand && <p className="mt-1 text-[11px] text-[#e53e3e]">{errors.brand}</p>}
               </div>
               <div>
                 <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">Vi xử lý (CPU)</label>
@@ -235,13 +240,14 @@ function ProductDrawer({ categories, onClose, onSave }) {
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">Ảnh sản phẩm</label>
+              <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">Ảnh sản phẩm *</label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
                 className="w-full rounded-xl border border-black/[0.1] bg-[#fafafa] px-4 py-2.5 text-[13px] file:mr-3 file:border-0 file:bg-[#1d1d1f] file:px-3 file:py-1.5 file:text-white file:text-[11px] file:rounded file:cursor-pointer"
               />
+              {errors.image && <p className="mt-1 text-[11px] text-[#e53e3e]">{errors.image}</p>}
               {imagePreview && (
                 <div className="mt-3 rounded-lg overflow-hidden border border-black/[0.1]">
                   <img src={resolveImageUrl(imagePreview)} alt="Preview" className="w-full h-40 object-cover" />
@@ -541,8 +547,9 @@ function ProductModal({ product, categories, onClose, onSave }) {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">Thương hiệu (Brand)</label>
-                <input name="brand" value={form.brand} onChange={handle} placeholder="ASUS / Dell / MSI" className={inputCls(false)} />
+                <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">Thương hiệu (Brand) *</label>
+                <input name="brand" value={form.brand} onChange={handle} placeholder="ASUS / Dell / MSI" className={inputCls(errors.brand)} />
+                {errors.brand && <p className="mt-1 text-[11px] text-[#e53e3e]">{errors.brand}</p>}
               </div>
               <div>
                 <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">Vi xử lý (CPU)</label>
@@ -599,13 +606,14 @@ function ProductModal({ product, categories, onClose, onSave }) {
               {errors.category && <p className="mt-1 text-[11px] text-[#e53e3e]">{errors.category}</p>}
             </div>
             <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">Ảnh sản phẩm</label>
+              <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">Ảnh sản phẩm *</label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
                 className="w-full rounded-xl border border-black/[0.1] bg-[#fafafa] px-4 py-2.5 text-[13px] file:mr-3 file:border-0 file:bg-[#1d1d1f] file:px-3 file:py-1.5 file:text-white file:text-[11px] file:rounded file:cursor-pointer"
               />
+              {errors.image && <p className="mt-1 text-[11px] text-[#e53e3e]">{errors.image}</p>}
               {imagePreview && (
                 <div className="mt-3 flex h-40 items-center justify-center overflow-hidden rounded-lg border border-black/[0.1] bg-[#f5f5f7]">
                   <ImageWithFallback src={imagePreview} alt="Preview" className="max-h-full w-auto object-contain" />

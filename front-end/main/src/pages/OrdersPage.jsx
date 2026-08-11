@@ -13,7 +13,18 @@ import { formatCurrency } from "../lib/format";
 
 const SF_FONT =
   "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif";
-const RETURNS_FEATURE_ENABLED = false;
+const RETURNS_FEATURE_ENABLED = true;
+
+const RETURN_STATUS_LABEL = {
+  Pending:  "Đã gửi yêu cầu hoàn hàng · chờ shop duyệt",
+  Approved: "Yêu cầu hoàn hàng đã được duyệt",
+  Rejected: "Yêu cầu hoàn hàng bị từ chối",
+};
+const RETURN_STATUS_STYLE = {
+  Pending:  "text-[#8e8e93]",
+  Approved: "text-[#2da44e]",
+  Rejected: "text-[#e53e3e]",
+};
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString("vi-VN", {
@@ -530,14 +541,16 @@ function OrderCard({ order, onCancel, onReturn }) {
                   <button
                     type="button"
                     onClick={() => setShowReturn(true)}
-                    className={`${RETURNS_FEATURE_ENABLED && !order._returnRequested ? "" : "hidden"} rounded-full border border-[#8e8e93] px-4 py-2 text-sm font-medium text-[#3a3a3c] transition-all hover:bg-[#f5f5f7]`}
+                    className={`${RETURNS_FEATURE_ENABLED && !order.returnStatus ? "" : "hidden"} rounded-full border border-[#8e8e93] px-4 py-2 text-sm font-medium text-[#3a3a3c] transition-all hover:bg-[#f5f5f7]`}
                   >
                     Yêu cầu hoàn hàng
                   </button>
                 </div>
               )}
-              {RETURNS_FEATURE_ENABLED && order._returnRequested && (
-                <p className="mt-3 text-[12px] text-[#8e8e93]">Đã gửi yêu cầu hoàn hàng</p>
+              {RETURNS_FEATURE_ENABLED && order.returnStatus && (
+                <p className={`mt-3 text-[12px] ${RETURN_STATUS_STYLE[order.returnStatus] || "text-[#8e8e93]"}`}>
+                  {RETURN_STATUS_LABEL[order.returnStatus] || "Đã gửi yêu cầu hoàn hàng"}
+                </p>
               )}
 
             </div>
@@ -649,7 +662,7 @@ export default function OrdersPage() {
 
   const handleReturn = (orderId) => {
     setOrders((prev) =>
-      prev.map((o) => (o._id === orderId ? { ...o, _returnRequested: true } : o))
+      prev.map((o) => (o._id === orderId ? { ...o, returnStatus: "Pending" } : o))
     );
   };
 

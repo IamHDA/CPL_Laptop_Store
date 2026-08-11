@@ -335,7 +335,14 @@ exports.getFlashSales = async (req, res, next) => {
 // Admin only — tạo slug tự động từ name, xử lý ảnh qua Cloudinary middleware
 exports.createProduct = async (req, res, next) => {
   try {
-    const { name, description, category, basePrice, salePrice, saleDiscount, stock, tags, images, specifications } = req.body;
+    const { name, brand, description, category, basePrice, salePrice, saleDiscount, stock, tags, images, specifications } = req.body;
+
+    if (!brand || !String(brand).trim()) {
+      return res.status(400).json({ success: false, message: "Vui lòng nhập thương hiệu." });
+    }
+    if (!Array.isArray(images) || images.length === 0 || !images[0]?.url) {
+      return res.status(400).json({ success: false, message: "Vui lòng chọn ảnh sản phẩm." });
+    }
 
     // Giá bán không được nhỏ hơn giá nhập (không bán dưới giá vốn)
     if (salePrice && Number(salePrice) < Number(basePrice)) {
@@ -365,7 +372,7 @@ exports.createProduct = async (req, res, next) => {
     }
 
     const product = await Product.create({
-      name, slug, description, category, basePrice,
+      name, slug, brand: String(brand).trim(), description, category, basePrice,
       salePrice: salePrice || null,
       saleDiscount: saleDiscount || null,
       stock:     stock || 0,
@@ -392,7 +399,7 @@ exports.createProduct = async (req, res, next) => {
 exports.updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, description, category, basePrice, salePrice, saleDiscount, stock, tags, isActive, images, specifications } = req.body;
+    const { name, brand, description, category, basePrice, salePrice, saleDiscount, stock, tags, isActive, images, specifications } = req.body;
 
     const product = await Product.findOne({ _id: id, deletedAt: null });
     if (!product) {
@@ -434,6 +441,15 @@ exports.updateProduct = async (req, res, next) => {
       }
       updateData.name = name;
       updateData.slug = newSlug;
+    }
+    if (brand !== undefined) {
+      if (!String(brand).trim()) {
+        return res.status(400).json({ success: false, message: "Thương hiệu không được để trống." });
+      }
+      updateData.brand = String(brand).trim();
+    }
+    if (images !== undefined && (!Array.isArray(images) || images.length === 0 || !images[0]?.url)) {
+      return res.status(400).json({ success: false, message: "Sản phẩm phải có ít nhất một ảnh." });
     }
     if (description !== undefined) updateData.description = description;
     if (category    !== undefined) updateData.category    = category;
