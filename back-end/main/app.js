@@ -95,13 +95,27 @@ const searchLimit = rateLimit({
   message: { success: false, message: "Quá nhiều yêu cầu tìm kiếm." },
 });
 
-// Không await: mongoose tự buffer query cho tới khi kết nối xong.
-connectDB().catch((err) => console.error("[DB] Không kết nối được MongoDB:", err.message));
-
 // ── No-store cho API nhạy cảm (route handler có thể override bằng res.set) ─────
 app.use("/api", (req, res, next) => {
   res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
   next();
+});
+
+// Đảm bảo có kết nối DB trước mỗi request. connectDB() cache lại nên khi đã kết
+// nối thì gần như không tốn gì; nếu lần connect trước hỏng thì request sau tự thử
+// lại. Gọi một lần lúc nạp module là không đủ: lambda nào cold start hụt sẽ sống
+// tiếp mà không có DB, và mọi query trên nó buffer 10s rồi trả 500 mãi mãi.
+app.use("/api", async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error("[DB] Không kết nối được MongoDB:", err.message);
+    res.status(503).json({
+      success: false,
+      message: "Máy chủ đang không kết nối được cơ sở dữ liệu. Vui lòng thử lại.",
+    });
+  }
 });
 
 // ── Routes ─────────────────────────────────────────────────────────────────────
