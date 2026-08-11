@@ -16,13 +16,10 @@ const SF_FONT = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Te
 
 const PAGE_SIZE = 12;
 
-const CATEGORY_META = {
-  "laptop-gaming":     { emoji: "💻", name: "Laptop Gaming",     desc: "Laptop cấu hình cao dành cho chơi game, đồ họa và tác vụ nặng." },
-  "laptop-van-phong":  { emoji: "💼", name: "Laptop Văn Phòng",  desc: "Laptop mỏng nhẹ, pin tốt, phù hợp học tập và làm việc hằng ngày." },
-  "vga-card-do-hoa":   { emoji: "🎮", name: "VGA - Card Đồ Họa", desc: "Card màn hình rời NVIDIA và AMD cho gaming, thiết kế và dựng hình." },
-  "cpu-bo-vi-xu-ly":   { emoji: "⚙️", name: "CPU - Bộ Vi Xử Lý", desc: "Bộ vi xử lý Intel Core và AMD Ryzen cho PC và workstation." },
-  "ram-ssd":           { emoji: "🔧", name: "RAM & Ổ Cứng SSD",  desc: "Bộ nhớ RAM và ổ cứng SSD tốc độ cao để nâng cấp hiệu năng." },
-};
+// Không hardcode danh sách danh mục ở đây nữa. Bản cũ giữ một map 5 slug và dùng
+// nó làm cổng 404, nên mọi danh mục thêm sau (Đồ Họa, Màn Hình, Phụ Kiện) đều bị
+// đá về /not-found, còn "ram-ssd" thì lọt qua dù slug thật là "ram-o-cung-ssd" —
+// trang mở được nhưng không có sản phẩm lẫn banner. Giờ hỏi thẳng API.
 
 const SORT_OPTIONS = [
   { value: "newest",      label: "Mới" },
@@ -101,7 +98,6 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 export default function CategoryPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const meta = CATEGORY_META[slug?.toLowerCase()];
 
   const [products, setProducts] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
@@ -113,10 +109,6 @@ export default function CategoryPage() {
   const [activeFilter, setActiveFilter] = useState(null);
   const [banners, setBanners] = useState([]);
   const [bannerIdx, setBannerIdx] = useState(0);
-
-  useEffect(() => {
-    if (!meta) navigate("/not-found", { replace: true });
-  }, [meta, navigate]);
 
   useEffect(() => {
     if (!slug) return;
@@ -134,6 +126,12 @@ export default function CategoryPage() {
     fetch(`${API_URL}/api/products/filter/category?categorySlug=${slug}&page=${currentPage}&limit=${PAGE_SIZE}&sort=${sortBy}${searchParam}`)
       .then((r) => r.json())
       .then((json) => {
+        // API trả 404 khi slug không tồn tại — đó là nguồn sự thật duy nhất cho
+        // việc danh mục có thật hay không.
+        if (json.success === false) {
+          navigate("/not-found", { replace: true });
+          return;
+        }
         setProducts(json.data?.products || []);
         setTotalProducts(json.data?.pagination?.total || 0);
         setTotalPages(json.data?.pagination?.totalPages || 1);
@@ -159,7 +157,7 @@ export default function CategoryPage() {
       .catch(() => {});
   }, [slug]);
 
-  if (!meta) return null;
+
 
   return (
     <div

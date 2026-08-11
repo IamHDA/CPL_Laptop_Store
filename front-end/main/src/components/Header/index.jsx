@@ -14,14 +14,33 @@ import { getCartCount } from "../../lib/cart";
 import axiosClient from "../../lib/api";
 
 /* ─── Nav items ──────────────────────────────────────────────────── */
-const NAV_ITEMS = [
-  { label: "Laptop Gaming", to: "/categories/laptop-gaming" },
-  { label: "Laptop Văn Phòng", to: "/categories/laptop-van-phong" },
-  { label: "VGA", to: "/categories/vga-card-do-hoa" },
-  { label: "CPU", to: "/categories/cpu-bo-vi-xu-ly" },
-  { label: "RAM & SSD", to: "/categories/ram-ssd" },
-  { label: "So sánh", to: "/compare" },
-];
+// Menu dựng từ /api/categories thay vì hardcode. Danh sách cũ đứng yên trong khi
+// danh mục trong DB đổi: thiếu Đồ Họa / Màn Hình / Phụ Kiện, và "RAM & SSD" còn
+// trỏ /categories/ram-ssd trong khi slug thật là ram-o-cung-ssd — bấm vào ra
+// trang trống không sản phẩm, không banner.
+const STATIC_NAV = [{ label: "So sánh", to: "/compare" }];
+
+function useNavItems() {
+  const [items, setItems] = useState(STATIC_NAV);
+
+  useEffect(() => {
+    let alive = true;
+    axiosClient
+      .get("/api/categories")
+      .then(({ data }) => {
+        if (!alive) return;
+        const cats = (data.data || []).map((c) => ({
+          label: c.name,
+          to: `/categories/${c.slug}`,
+        }));
+        setItems([...cats, ...STATIC_NAV]);
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
+
+  return items;
+}
 
 /* ─── Shared state helpers ───────────────────────────────────────── */
 function useHeaderState() {
@@ -319,6 +338,7 @@ function AnnouncementBar({ cartCount, isLoggedIn, isAdmin, userInitial }) {
 
 /* ─── Navbar (sticky) ────────────────────────────────────────────── */
 function Navbar({ scrolled, cartCount, isLoggedIn, isAdmin, userInitial }) {
+  const NAV_ITEMS = useNavItems();
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
