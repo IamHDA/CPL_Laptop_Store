@@ -334,7 +334,7 @@ exports.getFlashSales = async (req, res, next) => {
 // Admin only — tạo slug tự động từ name, xử lý ảnh qua Cloudinary middleware
 exports.createProduct = async (req, res, next) => {
   try {
-    const { name, description, category, basePrice, salePrice, saleDiscount, stock, tags, images } = req.body;
+    const { name, description, category, basePrice, salePrice, saleDiscount, stock, tags, images, specifications } = req.body;
 
     // Giá bán không được nhỏ hơn giá nhập (không bán dưới giá vốn)
     if (salePrice && Number(salePrice) < Number(basePrice)) {
@@ -370,6 +370,7 @@ exports.createProduct = async (req, res, next) => {
       stock:     stock || 0,
       tags:      tags || [],
       images:    images || [],
+      specifications: specifications || {},
     });
 
     console.info(`[AUDIT] Admin ${req.user.id} created product ${product._id} at ${new Date().toISOString()}`);
@@ -390,7 +391,7 @@ exports.createProduct = async (req, res, next) => {
 exports.updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, description, category, basePrice, salePrice, saleDiscount, stock, tags, isActive, images } = req.body;
+    const { name, description, category, basePrice, salePrice, saleDiscount, stock, tags, isActive, images, specifications } = req.body;
 
     const product = await Product.findOne({ _id: id, deletedAt: null });
     if (!product) {
@@ -442,6 +443,7 @@ exports.updateProduct = async (req, res, next) => {
     if (tags        !== undefined) updateData.tags        = tags;
     if (isActive    !== undefined) updateData.isActive    = isActive;
     if (images      !== undefined) updateData.images      = images;
+    if (specifications !== undefined) updateData.specifications = specifications;
 
     const updated = await Product.findByIdAndUpdate(
       id,
