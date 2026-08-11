@@ -446,7 +446,11 @@ function Navbar({ scrolled, cartCount, isLoggedIn, isAdmin, userInitial }) {
         </Link>
 
         {/* Desktop nav — centered */}
-        <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-5 lg:gap-6">
+        {/* Nằm trong luồng flex, không absolute. Bản cũ dùng
+            absolute left-1/2 -translate-x-1/2 nên nav đứng ngoài layout: nó nở đều
+            hai bên và trượt xuống dưới ô tìm kiếm. Với 5 mục thì chưa chạm, thêm
+            danh mục vào là đè mất mục cuối. */}
+        <div className="hidden min-w-0 flex-1 items-center justify-center gap-4 px-4 md:flex lg:gap-6">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
@@ -477,7 +481,7 @@ function Navbar({ scrolled, cartCount, isLoggedIn, isAdmin, userInitial }) {
         </div>
 
         {/* Right: Search + (User+Cart khi scrolled) + Mobile toggle */}
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           {/* Search */}
           <div ref={searchBoxRef} className="relative hidden sm:block">
             <form onSubmit={handleSearch} className="relative">
