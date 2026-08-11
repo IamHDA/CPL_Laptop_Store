@@ -97,15 +97,6 @@ const NAV = [
     ),
   },
   {
-    to: "/admin/returns",
-    label: "Hoàn hàng",
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-        <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 .49-3.51" />
-      </svg>
-    ),
-  },
-  {
     to: "/admin/homepage-settings",
     label: "Trang chủ",
     icon: (
@@ -126,7 +117,6 @@ const PAGE_TITLES = {
   "/admin/vouchers":     "Quản lý Voucher",
   "/admin/flash-sales":  "Quản lý Flash Sale",
   "/admin/banners":      "Quản lý Banner",
-  "/admin/returns":           "Quản lý hoàn hàng",
   "/admin/homepage-settings": "Bố cục trang chủ",
 };
 

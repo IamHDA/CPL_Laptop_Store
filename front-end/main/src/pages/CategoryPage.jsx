@@ -17,12 +17,11 @@ const SF_FONT = "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Te
 const PAGE_SIZE = 12;
 
 const CATEGORY_META = {
-  iphone:      { emoji: "📱", name: "iPhone",      desc: "Dòng iPhone mới nhất với hiệu năng đỉnh cao và camera thế hệ mới." },
-  ipad:        { emoji: "🖥️", name: "iPad",        desc: "iPad với chip mạnh mẽ, màn hình sắc nét cho công việc sáng tạo." },
-  mac:         { emoji: "💻", name: "Mac",          desc: "MacBook và iMac với chip Apple Silicon, hiệu năng vượt trội." },
-  watch:       { emoji: "⌚", name: "Watch",        desc: "Apple Watch theo dõi sức khoẻ, kết nối thông minh mọi lúc mọi nơi." },
-  audio:       { emoji: "🎧", name: "Audio",        desc: "AirPods và tai nghe với âm thanh vòm không gian sống động." },
-  accessories: { emoji: "🔌", name: "Accessories",  desc: "Phụ kiện chính hãng Apple tương thích hoàn hảo với mọi thiết bị." },
+  "laptop-gaming":     { emoji: "💻", name: "Laptop Gaming",     desc: "Laptop cấu hình cao dành cho chơi game, đồ họa và tác vụ nặng." },
+  "laptop-van-phong":  { emoji: "💼", name: "Laptop Văn Phòng",  desc: "Laptop mỏng nhẹ, pin tốt, phù hợp học tập và làm việc hằng ngày." },
+  "vga-card-do-hoa":   { emoji: "🎮", name: "VGA - Card Đồ Họa", desc: "Card màn hình rời NVIDIA và AMD cho gaming, thiết kế và dựng hình." },
+  "cpu-bo-vi-xu-ly":   { emoji: "⚙️", name: "CPU - Bộ Vi Xử Lý", desc: "Bộ vi xử lý Intel Core và AMD Ryzen cho PC và workstation." },
+  "ram-ssd":           { emoji: "🔧", name: "RAM & Ổ Cứng SSD",  desc: "Bộ nhớ RAM và ổ cứng SSD tốc độ cao để nâng cấp hiệu năng." },
 };
 
 const SORT_OPTIONS = [

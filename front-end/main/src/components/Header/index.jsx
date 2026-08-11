@@ -15,12 +15,11 @@ import axiosClient from "../../lib/api";
 
 /* ─── Nav items ──────────────────────────────────────────────────── */
 const NAV_ITEMS = [
-  { label: "iPhone", to: "/categories/iphone" },
-  { label: "iPad", to: "/categories/ipad" },
-  { label: "Mac", to: "/categories/mac" },
-  { label: "Watch", to: "/categories/watch" },
-  { label: "Audio", to: "/categories/audio" },
-  { label: "Accessories", to: "/categories/accessories" },
+  { label: "Laptop Gaming", to: "/categories/laptop-gaming" },
+  { label: "Laptop Văn Phòng", to: "/categories/laptop-van-phong" },
+  { label: "VGA", to: "/categories/vga-card-do-hoa" },
+  { label: "CPU", to: "/categories/cpu-bo-vi-xu-ly" },
+  { label: "RAM & SSD", to: "/categories/ram-ssd" },
 ];
 
 /* ─── Shared state helpers ───────────────────────────────────────── */

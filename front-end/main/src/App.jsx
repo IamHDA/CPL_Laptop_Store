@@ -13,7 +13,6 @@ import AdminLayout from "./pages/admin/AdminLayout";
 import AdminCategoriesPage from "./pages/admin/AdminCategoriesPage";
 import AdminProductsPage from "./pages/admin/AdminProductsPage.jsx";
 import AdminOrdersPage from "./pages/admin/AdminOrdersPage.jsx";
-import AdminReturnRequestsPage from "./pages/admin/AdminReturnRequestsPage.jsx";
 import AdminUsersPage from "./pages/admin/AdminUsersPage.jsx";
 import AdminVouchersPage from "./pages/admin/AdminVouchersPage.jsx";
 import AdminFlashSalesPage from "./pages/admin/AdminFlashSalesPage.jsx";
@@ -142,7 +141,6 @@ export default function App() {
           <Route path="products" element={<AdminProductsPage />} />
           <Route path="categories" element={<AdminCategoriesPage />} />
           <Route path="orders" element={<AdminOrdersPage />} />
-          <Route path="return-requests" element={<AdminReturnRequestsPage />} />
           <Route path="users" element={<AdminUsersPage />} />
           <Route path="flash-sales" element={<AdminFlashSalesPage />} />
           <Route path="vouchers" element={<AdminVouchersPage />} />
