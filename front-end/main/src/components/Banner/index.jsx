@@ -1,29 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 import { ImageWithFallback, resolveImageUrl } from "../ImageWithFallback";
+import { API_URL } from "../../lib/api";
 
 const AUTOPLAY_MS = 4500;
 const BANNER_PATH = "/api/home-slides?position=homepage";
 
+// Dùng API_URL như mọi chỗ khác. Bản cũ thử lần lượt đường dẫn tương đối rồi
+// localhost:3000 — trên production đường dẫn tương đối rơi vào chính origin của
+// FE, bị vercel.json rewrite về index.html và trả HTTP 200 kèm HTML, nên
+// res.ok là true còn .json() thì ném lỗi. Hai fallback localhost sau đó cũng
+// không thể tới được từ máy người dùng.
 async function fetchBanners() {
-  const candidates = [
-    BANNER_PATH,
-    "http://localhost:3000/api/home-slides?position=homepage",
-    "http://127.0.0.1:3000/api/home-slides?position=homepage",
-  ];
-  const errors = [];
-
-  for (const url of candidates) {
-    try {
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
-      return { json, url };
-    } catch (error) {
-      errors.push(`${url}: ${error?.message || "fetch failed"}`);
-    }
-  }
-
-  throw new Error(errors.join(" | "));
+  const url = `${API_URL}${BANNER_PATH}`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return { json: await res.json(), url };
 }
 
 function Arrow({ left, onClick, disabled }) {

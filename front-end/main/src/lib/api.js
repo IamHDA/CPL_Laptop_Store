@@ -1,7 +1,17 @@
 import axios from "axios";
 
-export const API_URL =
+const RAW_API_URL =
   import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:3000" : "");
+
+// VITE_API_URL thiếu scheme ("abc.vercel.app") biến mọi request thành đường dẫn
+// tương đối: nó rơi vào origin của chính FE, bị rewrite về index.html và trả về
+// HTTP 200 kèm HTML — res.ok vẫn true nên lỗi chỉ lộ ra ở .json(), im lặng và
+// rất khó lần. Tự thêm https:// thay vì để hỏng ngầm.
+export const API_URL = /^https?:\/\//.test(RAW_API_URL)
+  ? RAW_API_URL.replace(/\/$/, "")
+  : RAW_API_URL
+    ? `https://${RAW_API_URL.replace(/\/$/, "")}`
+    : "";
 
 // ── Axios instance với auto Bearer token ─────────────────────────────────────
 const axiosClient = axios.create({ baseURL: API_URL, withCredentials: true });
