@@ -558,11 +558,6 @@ export default function CheckoutPage() {
           orderId: res.data._id,
         });
         window.location.href = vnpRes.data.paymentUrl;
-      } else if (paymentMethod === "momo") {
-        const { data: momoRes } = await axiosClient.post("/api/payments/momo/create", {
-          orderId: res.data._id,
-        });
-        window.location.href = momoRes.data.paymentUrl;
       } else {
         toast.success("Đặt hàng thành công! Cảm ơn bạn đã mua hàng.");
         navigate("/orders");
@@ -917,15 +912,6 @@ export default function CheckoutPage() {
                     iconBg="#2563eb"
                     title="Chuyển khoản ngân hàng"
                     desc="Thông tin tài khoản sẽ được gửi qua email"
-                  />
-                  <PaymentCard
-                    value="momo"
-                    selected={paymentMethod === "momo"}
-                    onChange={setPaymentMethod}
-                    imgSrc="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/MoMo_Logo_App.svg/960px-MoMo_Logo_App.svg.png"
-                    iconBg="#ae2070"
-                    title="Ví điện tử MoMo"
-                    desc="Thanh toán nhanh qua ứng dụng MoMo"
                   />
                   <PaymentCard
                     value="vnpay"

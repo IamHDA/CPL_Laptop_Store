@@ -41,6 +41,7 @@ const REFUND_CONFIG = {
   refunded:       { label: "Đã hoàn tiền",  color: "bg-[#f0fdf4] text-[#15803d] border-[#bbf7d0]" },
 };
 
+// Giữ momo để 2 đơn cũ đã thanh toán bằng MoMo vẫn hiện đúng tên, dù đã gỡ khỏi trang thanh toán.
 const PAYMENT_LABEL = { cod: "COD", bank: "Chuyển khoản", momo: "MoMo", vnpay: "VNPay" };
 
 const TABS = [

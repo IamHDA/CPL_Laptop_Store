@@ -188,15 +188,7 @@ export default function CategoryPage() {
                 </>
               )}
             </div>
-          ) : (
-            <div className="relative w-full rounded-2xl overflow-hidden mb-8 group cursor-pointer bg-white border border-black/[0.04]">
-              <img
-                src="https://shopdunk.com/images/uploaded/banner-thang-4/homepage/banner%20iP17promax_PC.png"
-                alt="Category Banner"
-                className="w-full h-auto block"
-              />
-            </div>
-          )}
+          ) : null}
 
           {/* Filter Bar */}
           {seriesFilters.length > 0 && (

@@ -230,7 +230,7 @@ export default function SearchPage() {
               </svg>
               <h2 className="text-[18px] font-medium text-[#1d1d1f]">Nhập từ khoá để tìm kiếm</h2>
               <p className="mt-2 text-sm text-[#6e6e73]">
-                Tìm iPhone, iPad, Mac, AirPods và nhiều hơn nữa...
+                Tìm laptop, VGA, CPU, RAM, màn hình và nhiều hơn nữa...
               </p>
               <Link
                 to="/products"

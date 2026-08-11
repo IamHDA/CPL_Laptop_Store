@@ -102,7 +102,7 @@ function CategoryModal({ category, onClose, onSave }) {
         <form onSubmit={handleSubmit} className="space-y-4 p-6">
           <div>
             <label className="mb-1.5 block text-[12px] font-medium text-[#1d1d1f]">Tên danh mục *</label>
-            <input value={form.name} onChange={set("name")} placeholder="iPhone, MacBook, iPad..." className={inputCls("name")} />
+            <input value={form.name} onChange={set("name")} placeholder="Laptop Gaming, VGA, RAM & SSD..." className={inputCls("name")} />
             {errors.name && <p className="mt-1 text-[11px] text-[#e53e3e]">{errors.name}</p>}
           </div>
 
