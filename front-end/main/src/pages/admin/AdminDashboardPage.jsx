@@ -266,10 +266,8 @@ export default function AdminDashboardPage() {
       axiosClient.get(`/api/admin/stats/top-products${qStr}&limit=5`),
       axiosClient.get("/api/admin/stats/low-stock?threshold=10&limit=200"),
       axiosClient.get("/api/admin/orders?limit=5"),
-      // by-category nhận cùng bộ lọc ngày; orders-by-status thì không có tham số
-      // lọc ở back-end nên luôn là tổng toàn thời gian.
       axiosClient.get(`/api/admin/stats/by-category${qStr}`),
-      axiosClient.get("/api/admin/stats/orders-by-status"),
+      axiosClient.get(`/api/admin/stats/orders-by-status${qStr}`),
     ])
       .then(([ov, rev, top, low, ord, cat, sts]) => {
         setOverview(ov.data.data);
@@ -408,7 +406,9 @@ export default function AdminDashboardPage() {
             <div className="rounded-2xl border border-black/[0.06] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
               <div className="mb-4 flex items-baseline justify-between">
                 <h2 className="text-[15px] font-semibold text-[#1d1d1f]">Đơn hàng theo trạng thái</h2>
-                <span className="text-xs text-[#8e8e93]">Toàn thời gian</span>
+                <span className="text-xs text-[#8e8e93]">
+                  {startDate || endDate || categoryId !== "all" ? "Theo bộ lọc" : "Toàn thời gian"}
+                </span>
               </div>
               <OrderStatusChart data={ordersByStatus} />
             </div>

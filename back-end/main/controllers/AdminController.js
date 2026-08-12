@@ -345,7 +345,29 @@ exports.getLowStockAlert = async (req, res, next) => {
 // GET /api/admin/stats/orders-by-status
 exports.getOrdersByStatus = async (req, res, next) => {
   try {
+    const { startDate, endDate, categoryId } = req.query;
+
+    const match = {};
+    if (startDate || endDate) {
+      match.createdAt = {};
+      if (startDate) match.createdAt.$gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        match.createdAt.$lte = end;
+      }
+    }
+
+    // Lọc danh mục: đếm đơn có chứa ít nhất một sản phẩm thuộc danh mục đó.
+    // Match thẳng trên mảng products nên mỗi đơn vẫn chỉ đếm một lần — khác với
+    // các thống kê khác phải $unwind theo từng dòng sản phẩm.
+    if (categoryId && categoryId !== "all") {
+      const productIds = await Product.find({ category: categoryId }).distinct("_id");
+      match["products.product"] = { $in: productIds };
+    }
+
     const stats = await Order.aggregate([
+      ...(Object.keys(match).length > 0 ? [{ $match: match }] : []),
       { $group: { _id: "$status", count: { $sum: 1 } } },
     ]);
 
