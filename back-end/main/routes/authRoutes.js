@@ -3,6 +3,7 @@ const router         = express.Router();
 const passport       = require("../config/passport");
 const AuthController = require("../controllers/AuthController");
 const { authenticate, authorizeAdmin } = require("../middleware/authMiddleware");
+const clientUrl = require("../lib/clientUrl");
 
 router.post("/register",             AuthController.register);
 router.post("/verify-register-otp",  AuthController.verifyRegisterOtp);
@@ -17,7 +18,7 @@ router.put("/change-password",       authenticate, AuthController.changePassword
 // Google OAuth
 const requireGoogleConfig = (req, res, next) => {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-    return res.redirect(`${process.env.CLIENT_URL || "http://localhost:5174"}/login?error=oauth_not_configured`);
+    return res.redirect(`${clientUrl()}/login?error=oauth_not_configured`);
   }
   next();
 };
@@ -31,7 +32,7 @@ router.get("/google/callback",
   passport.authenticate("google", {
     session:         false,
     state:           true,
-    failureRedirect: `${process.env.CLIENT_URL || "http://localhost:5174"}/login?error=oauth_failed`,
+    failureRedirect: `${clientUrl()}/login?error=oauth_failed`,
   }),
   AuthController.googleOAuthCallback
 );

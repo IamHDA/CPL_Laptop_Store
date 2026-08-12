@@ -6,6 +6,7 @@ const ProductVariant     = require("../models/ProductVariant");
 const User               = require("../models/User");
 const LoyaltyTransaction = require("../models/LoyaltyTransaction");
 const Notification       = require("../models/Notification");
+const clientUrl = require("../lib/clientUrl");
 
 // ─── Helper: Sort + encode params đúng theo sortObject của VNPay ─────────────
 // VNPay ký trên giá trị đã encodeURIComponent (+ thay %20), KHÔNG phải raw value
@@ -42,7 +43,12 @@ exports.createVNPayUrl = async (req, res, next) => {
     const tmnCode   = process.env.VNP_TMN_CODE;
     const secretKey = process.env.VNP_HASH_SECRET;
     const vnpUrl    = process.env.VNP_URL    || "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    const returnUrl = process.env.VNP_RETURN_URL;
+
+    // VNPay nhận return URL theo từng giao dịch, nên suy ra từ chính request đang
+    // xử lý — đúng ở local, preview lẫn production mà không phải cấu hình gì.
+    // Bản cũ đọc VNP_RETURN_URL; biến đó đặt từ hồi chạy local nên trên production
+    // VNPay đá người dùng về localhost:3000.
+    const returnUrl = `${req.protocol}://${req.get("host")}/api/payments/vnpay/return`;
 
     const now = new Date();
     const pad = (n) => String(n).padStart(2, "0");
@@ -79,7 +85,7 @@ exports.createVNPayUrl = async (req, res, next) => {
 exports.vnpayReturn = async (req, res, next) => {
   try {
     const secretKey = process.env.VNP_HASH_SECRET;
-    const clientUrl = process.env.CLIENT_URL || "http://localhost:5174";
+    const feUrl = clientUrl();
 
     const params       = { ...req.query };
     const receivedHash = params.vnp_SecureHash;
@@ -88,7 +94,7 @@ exports.vnpayReturn = async (req, res, next) => {
 
     // Verify chữ ký
     if (receivedHash !== signVNPay(params, secretKey)) {
-      return res.redirect(`${clientUrl}/payment/result?success=false&code=INVALID_SIGNATURE`);
+      return res.redirect(`${feUrl}/payment/result?success=false&code=INVALID_SIGNATURE`);
     }
 
     const orderId      = params.vnp_TxnRef;
@@ -96,13 +102,13 @@ exports.vnpayReturn = async (req, res, next) => {
     const order        = await Order.findById(orderId);
 
     if (!order) {
-      return res.redirect(`${clientUrl}/payment/result?success=false&code=ORDER_NOT_FOUND`);
+      return res.redirect(`${feUrl}/payment/result?success=false&code=ORDER_NOT_FOUND`);
     }
 
     if (responseCode === "00") {
       // Idempotency: VNPay có thể gọi lại nhiều lần
       if (order.status !== "PendingPayment") {
-        return res.redirect(`${clientUrl}/payment/result?success=true&orderId=${orderId}`);
+        return res.redirect(`${feUrl}/payment/result?success=true&orderId=${orderId}`);
       }
 
       // Xác nhận thanh toán
@@ -136,7 +142,7 @@ exports.vnpayReturn = async (req, res, next) => {
       });
 
       console.info(`[AUDIT] VNPay payment success for order ${orderId}`);
-      return res.redirect(`${clientUrl}/payment/result?success=true&orderId=${orderId}`);
+      return res.redirect(`${feUrl}/payment/result?success=true&orderId=${orderId}`);
 
     } else {
       // Thanh toán thất bại / bị huỷ — hoàn kho, huỷ đơn
@@ -165,7 +171,7 @@ exports.vnpayReturn = async (req, res, next) => {
       }
 
       console.info(`[AUDIT] VNPay payment failed for order ${orderId}, code: ${responseCode}`);
-      return res.redirect(`${clientUrl}/payment/result?success=false&orderId=${orderId}&code=${responseCode}`);
+      return res.redirect(`${feUrl}/payment/result?success=false&orderId=${orderId}&code=${responseCode}`);
     }
   } catch (err) {
     next(err);
@@ -377,13 +383,13 @@ exports.momoIPN = async (req, res, next) => {
 // GET /api/payments/momo/return
 exports.momoReturn = async (req, res, next) => {
   try {
-    const clientUrl  = process.env.CLIENT_URL || "http://localhost:5174";
+    const feUrl = clientUrl();
     const { orderId, resultCode, message } = req.query;
 
     if (resultCode === "0") {
-      return res.redirect(`${clientUrl}/payment/result?success=true&orderId=${orderId}`);
+      return res.redirect(`${feUrl}/payment/result?success=true&orderId=${orderId}`);
     } else {
-      return res.redirect(`${clientUrl}/payment/result?success=false&orderId=${orderId}&code=${resultCode}`);
+      return res.redirect(`${feUrl}/payment/result?success=false&orderId=${orderId}&code=${resultCode}`);
     }
   } catch (err) {
     next(err);

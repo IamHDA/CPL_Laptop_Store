@@ -121,6 +121,7 @@ export default function App() {
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/forgot-password" element={<ResetPasswordPage />} />
         <Route path="/payment-result" element={<PaymentResultPage />} />
+        <Route path="/payment/result" element={<PaymentResultPage />} />
 
         {/* Protected Customer Routes */}
         <Route

@@ -4,6 +4,7 @@ const bcrypt       = require("bcryptjs");
 const jwt          = require("jsonwebtoken");
 const OTP          = require("../models/Otp");
 const transporter  = require("../config/mailer");
+const clientUrl = require("../lib/clientUrl");
 
 // ─── Register — bước 1: gửi OTP, chưa tạo user ───────────────────────────────
 exports.register = async (req, res) => {
@@ -258,7 +259,7 @@ exports.googleOAuthCallback = async (req, res) => {
   try {
     const user = req.user; // set bởi Passport GoogleStrategy
     if (!user) {
-      return res.redirect(`${process.env.CLIENT_URL || "http://localhost:5174"}/login?error=oauth_failed`);
+      return res.redirect(`${clientUrl()}/login?error=oauth_failed`);
     }
 
     const accessToken = jwt.sign(
@@ -283,13 +284,13 @@ exports.googleOAuthCallback = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    const clientUrl = process.env.CLIENT_URL || "http://localhost:5174";
+    const feUrl = clientUrl();
     // Không truyền token qua URL (Referer/history leak) — dùng httpOnly cookie
     // Frontend đọc cookie hoặc gọi /api/users/profile để lấy user info
-    return res.redirect(`${clientUrl}/oauth-callback`);
+    return res.redirect(`${feUrl}/oauth-callback`);
   } catch (err) {
     console.error("Google OAuth callback error:", err);
-    return res.redirect(`${process.env.CLIENT_URL || "http://localhost:5174"}/login?error=server_error`);
+    return res.redirect(`${clientUrl()}/login?error=server_error`);
   }
 };
 
